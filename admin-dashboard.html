@@ -170,6 +170,11 @@
                         </div>
                     </div>
 
+                    <div class="form-group">
+                        <label>Total Player Slots (সর্বোচ্চ কতজন জয়েন করতে পারবে)</label>
+                        <input type="number" id="match-slots" placeholder="e.g. 48" min="1" value="48" required>
+                    </div>
+
                     <button type="submit" class="action-btn" style="background:#ff0055; color:#fff;">Launch Tournament Live 🚀</button>
                 </form>
             </div>
@@ -181,7 +186,7 @@
                         <thead>
                             <tr>
                                 <th>Game / Title</th>
-                                <th>Schedule & Fee</th>
+                                <th>Schedule, Fee & Slots</th>
                                 <th>Room ID / Pass</th>
                                 <th>Actions</th>
                             </tr>
@@ -268,8 +273,9 @@
                 time: document.getElementById('match-time').value.trim(),
                 entryFee: parseInt(document.getElementById('match-fee').value),
                 prize: parseInt(document.getElementById('match-prize').value),
-                roomId: "Not Set",    // ডিফল্ট মান
-                roomPass: "Not Set"   // ডিফল্ট মান
+                totalSlots: parseInt(document.getElementById('match-slots').value || 48), // ডেটাবেজে স্লট সেভ করা
+                roomId: "Not Set",    
+                roomPass: "Not Set"   
             };
 
             const targetMatchesRef = ref(database, 'matches/' + gameNode);
@@ -279,62 +285,73 @@
                 .then(() => {
                     alert("Tournament launched live on user feeds successfully!");
                     document.getElementById('match-launch-form').reset();
+                    document.getElementById('match-slots').value = "48";
                 })
                 .catch(err => alert("Error layout: " + err.message));
         });
 
         // 4. Fetch and Display All Matches Globally
         const matchesMainRef = ref(database, 'matches');
+        const registrationsMainRef = ref(database, 'match_registrations');
+
         onValue(matchesMainRef, (snapshot) => {
-            const tableBody = document.getElementById('live-match-list');
-            tableBody.innerHTML = ""; // টেবিল ক্লিয়ার করা
+            onValue(registrationsMainRef, (regSnapshot) => {
+                const tableBody = document.getElementById('live-match-list');
+                tableBody.innerHTML = ""; 
 
-            if (snapshot.exists()) {
                 const gamesData = snapshot.val();
-                let hasMatches = false;
+                const allRegsData = regSnapshot.val() || {};
 
-                // প্রতিটি গেম নোড (freefire, pubg ইত্যাদি) লুপ চালানো
-                for (let gameKey in gamesData) {
-                    const matchesUnderGame = gamesData[gameKey];
-                    
-                    for (let matchId in matchesUnderGame) {
-                        hasMatches = true;
-                        const match = matchesUnderGame[matchId];
+                if (snapshot.exists()) {
+                    let hasMatches = false;
 
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td>
-                                <span style="font-size:11px; background:rgba(255,0,85,0.2); color:#ff0055; padding:2px 6px; border-radius:3px; font-weight:bold; text-transform:uppercase;">${gameKey}</span>
-                                <div style="margin-top:5px; font-weight:bold; color:#00ffcc;">${match.title}</div>
-                                <div style="font-size:12px; color:#aaa;">Mode: ${match.mode} | Type: ${match.type}</div>
-                            </td>
-                            <td>
-                                <div>🕒 ${match.time}</div>
-                                <div style="font-size:12px; color:#ffcc00; margin-top:3px;">Fee: ${match.entryFee} BDT | Prize: ${match.prize} BDT</div>
-                            </td>
-                            <td>
-                                <div style="color:#00ffaa; font-family:monospace;">ID: ${match.roomId || 'Not Set'}</div>
-                                <div style="color:#00ffaa; font-family:monospace;">Pass: ${match.roomPass || 'Not Set'}</div>
-                            </td>
-                            <td>
-                                <button class="manage-btn btn-room" data-game="${gameKey}" data-id="${matchId}">Room ID</button>
-                                <button class="manage-btn btn-result" data-game="${gameKey}" data-id="${matchId}">Result</button>
-                                <button class="manage-btn btn-del" data-game="${gameKey}" data-id="${matchId}">Delete</button>
-                            </td>
-                        `;
-                        tableBody.appendChild(tr);
+                    for (let gameKey in gamesData) {
+                        const matchesUnderGame = gamesData[gameKey];
+                        const gameRegs = allRegsData[gameKey] || {};
+                        
+                        for (let matchId in matchesUnderGame) {
+                            hasMatches = true;
+                            const match = matchesUnderGame[matchId];
+                            
+                            // লাইভ কতজন জয়েন করেছে তা গণনা করা
+                            const matchRegs = gameRegs[matchId] || {};
+                            const totalJoined = Object.keys(matchRegs).length;
+
+                            const tr = document.createElement('tr');
+                            tr.innerHTML = `
+                                <td>
+                                    <span style="font-size:11px; background:rgba(255,0,85,0.2); color:#ff0055; padding:2px 6px; border-radius:3px; font-weight:bold; text-transform:uppercase;">${gameKey}</span>
+                                    <div style="margin-top:5px; font-weight:bold; color:#00ffcc;">${match.title}</div>
+                                    <div style="font-size:12px; color:#aaa;">Mode: ${match.mode} | Type: ${match.type}</div>
+                                </td>
+                                <td>
+                                    <div>🕒 ${match.time}</div>
+                                    <div style="font-size:12px; color:#ffcc00; margin-top:3px;">Fee: ${match.entryFee} BDT | Prize: ${match.prize} BDT</div>
+                                    <div style="font-size:12px; color:#00ffcc; margin-top:3px; font-weight:bold;">Joined: ${totalJoined} / ${match.totalSlots || 48}</div>
+                                </td>
+                                <td>
+                                    <div style="color:#00ffaa; font-family:monospace;">ID: ${match.roomId || 'Not Set'}</div>
+                                    <div style="color:#00ffaa; font-family:monospace;">Pass: ${match.roomPass || 'Not Set'}</div>
+                                </td>
+                                <td>
+                                    <button class="manage-btn btn-room" data-game="${gameKey}" data-id="${matchId}">Room ID</button>
+                                    <button class="manage-btn btn-result" data-game="${gameKey}" data-id="${matchId}">Result</button>
+                                    <button class="manage-btn btn-del" data-game="${gameKey}" data-id="${matchId}">Delete</button>
+                                </td>
+                            `;
+                            tableBody.appendChild(tr);
+                        }
                     }
-                }
 
-                if (!hasMatches) {
-                    showNoMatchesMessage(tableBody);
+                    if (!hasMatches) {
+                        showNoMatchesMessage(tableBody);
+                    } else {
+                        setupActionButtons();
+                    }
                 } else {
-                    // বাটনে ক্লিক হ্যান্ডলার যুক্ত করা
-                    setupActionButtons();
+                    showNoMatchesMessage(tableBody);
                 }
-            } else {
-                showNoMatchesMessage(tableBody);
-            }
+            });
         });
 
         function showNoMatchesMessage(element) {
@@ -382,15 +399,12 @@
                     const id = this.getAttribute('data-id');
                     
                     if (confirm("Move this match to Results node? (It will be removed from live matches)")) {
-                        // প্রথমে ওই ম্যাচের ডেটা সিঙ্গেল রিড করা
                         onValue(ref(database, `matches/${game}/${id}`), (snapshot) => {
                             if(snapshot.exists()) {
                                 const currentMatchData = snapshot.val();
                                 
-                                // 'results' নোডে পুশ করা
                                 set(ref(database, `results/${game}/${id}`), currentMatchData)
                                     .then(() => {
-                                        // সফলভাবে রেজাল্টে গেলে মেইন ম্যাচ লিস্ট থেকে রিমুভ করা
                                         remove(ref(database, `matches/${game}/${id}`));
                                         alert("Match successfully moved to Results!");
                                     }).catch(err => alert("Error moving: " + err.message));
@@ -411,4 +425,4 @@
         });
     </script>
 </body>
-    </html>
+                    </html>
