@@ -82,9 +82,15 @@
             border-radius: 12px;
             padding: 20px;
             display: flex;
+            flex-direction: column; /* রুম আইডির জন্য রেসপন্সিভ গ্রিড */
+            gap: 15px;
+            transition: 0.3s;
+        }
+        .match-main-info {
+            display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: 0.3s;
+            width: 100%;
         }
         .match-card:hover {
             border-color: #ff0055;
@@ -135,11 +141,29 @@
             background: #d00045;
             box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
         }
+        .join-btn:disabled {
+            background: #332a45;
+            color: #888;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
         .no-matches {
             text-align: center;
             color: #888;
             padding: 40px;
             font-size: 18px;
+        }
+
+        /* রুম আইডি প্রদর্শনের জন্য বিশেষ স্টাইল বক্স */
+        .room-details-box {
+            background: rgba(0, 255, 204, 0.1);
+            border: 1px dashed #00ffcc;
+            padding: 12px;
+            border-radius: 8px;
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
         }
 
         /* 🎁 PopUp Modal for Joining Match */
@@ -305,50 +329,97 @@
             displayZone.innerHTML = '<div class="no-matches">Searching for live tournaments...</div>';
 
             const matchesRef = ref(database, 'matches/' + selectedGame);
-            onValue(matchesRef, (snapshot) => {
-                displayZone.innerHTML = "";
-                const data = snapshot.val();
-                
-                if (!data) {
-                    displayZone.innerHTML = '<div class="no-matches">No matches available right now!</div>';
-                    return;
-                }
+            const registrationsRef = ref(database, `match_registrations/${selectedGame}`);
 
-                let matchCount = 0;
+            // লাইভ প্লেয়ার জয়েন স্ট্যাটাস ও স্লট লিমিট ট্র্যাকিং এর জন্য ডাবল ভ্যালু রিডিং লিসেনার
+            onValue(matchesRef, (matchSnapshot) => {
+                onValue(registrationsRef, (regSnapshot) => {
+                    displayZone.innerHTML = "";
+                    const matchesData = matchSnapshot.val();
+                    const regsData = regSnapshot.val() || {};
 
-                for (let key in data) {
-                    const match = data[key];
-                    
-                    // Filter logic by sub-category
-                    if (currentActiveMode !== "All" && match.mode !== currentActiveMode) {
-                        continue;
+                    if (!matchesData) {
+                        displayZone.innerHTML = '<div class="no-matches">No matches available right now!</div>';
+                        return;
                     }
 
-                    matchCount++;
+                    let matchCount = 0;
 
-                    const card = document.createElement('div');
-                    card.className = 'match-card';
-                    card.innerHTML = `
-                        <div class="match-details">
-                            <img class="match-logo" src="${match.logo || 'https://placehold.co/100x100?text=Match'}" alt="Logo">
-                            <div class="info">
-                                <h3>${match.title}</h3>
-                                <p>Type: <span class="highlight">${match.type} (${match.mode})</span></p>
-                                <p>Time: <span>${match.time}</span></p>
-                                <p>Prize Pool: <span class="highlight">${match.prize} BDT</span></p>
+                    for (let key in matchesData) {
+                        const match = matchesData[key];
+                        
+                        if (currentActiveMode !== "All" && match.mode !== currentActiveMode) {
+                            continue;
+                        }
+
+                        matchCount++;
+
+                        // কতজন প্লেয়ার অলরেডি জয়েন করেছে তা গণনা করা
+                        const matchRegs = regsData[key] || {};
+                        const totalJoined = Object.keys(matchRegs).length;
+                        const maxSlots = match.totalSlots || 48; // অ্যাডমিন থেকে স্লট না দিলে ডিফল্ট ৪৮
+
+                        // লগইন করা ইউজার নিজে জয়েন করেছে কিনা তা চেক করা
+                        let isUserJoined = false;
+                        for (let regId in matchRegs) {
+                            if (matchRegs[regId].userId === currentUserId) {
+                                isUserJoined = true;
+                                break;
+                            }
+                        }
+
+                        const card = document.createElement('div');
+                        card.className = 'match-card';
+
+                        // মূল ম্যাচের ইনফরমেশন অংশ
+                        let cardHTML = `
+                            <div class="match-main-info">
+                                <div class="match-details">
+                                    <img class="match-logo" src="${match.logo || 'https://placehold.co/100x100?text=Match'}" alt="Logo">
+                                    <div class="info">
+                                        <h3>${match.title}</h3>
+                                        <p>Type: <span class="highlight">${match.type} (${match.mode})</span></p>
+                                        <p>Time: <span>${match.time}</span></p>
+                                        <p>Prize Pool: <span class="highlight">${match.prize} BDT</span></p>
+                                        <p style="margin-top:4px;">Slots Available: <span style="color:#ffcc00; font-weight:bold;">${totalJoined} / ${maxSlots}</span></p>
+                                    </div>
+                                </div>
+                                <div class="match-action">
+                                    <p style="margin-bottom:8px; font-weight:bold;">Fee: <span style="color:#00ffcc;">${match.entryFee} BDT</span></p>
+                        `;
+
+                        // বাটন কন্ডিশন সেট করা (জয়েনড নাকি স্লট ফুল নাকি রেগুলার জয়েন)
+                        if (isUserJoined) {
+                            cardHTML += `<button class="join-btn" disabled style="background:#00ffcc; color:#000; font-weight:bold;">Joined</button>`;
+                        } else if (totalJoined >= maxSlots) {
+                            cardHTML += `<button class="join-btn" disabled>Slot Full</button>`;
+                        } else {
+                            cardHTML += `<button class="join-btn" onclick="openJoinModal('${key}', '${match.title}', ${match.entryFee})">Join</button>`;
+                        }
+
+                        cardHTML += `
+                                </div>
                             </div>
-                        </div>
-                        <div class="match-action">
-                            <p style="margin-bottom:8px; font-weight:bold;">Fee: <span style="color:#00ffcc;">${match.entryFee} BDT</span></p>
-                            <button class="join-btn" onclick="openJoinModal('${key}', '${match.title}', ${match.entryFee})">Join</button>
-                        </div>
-                    `;
-                    displayZone.appendChild(card);
-                }
+                        `;
 
-                if (matchCount === 0) {
-                    displayZone.innerHTML = '<div class="no-matches">No active match found for this category.</div>';
-                }
+                        // যদি ইউজার এই ম্যাচে জয়েন করে থাকে, তবে তার নিচে লাইভ রুম আইডি ও পাসওয়ার্ড দেখাবে
+                        if (isUserJoined) {
+                            cardHTML += `
+                                <div class="room-details-box">
+                                    <div>🔑 <strong style="color:#fff;">Room ID:</strong> <span style="color:#00ffcc; font-family:monospace; font-size:16px; margin-left:5px;">${match.roomId || 'Waiting...'}</span></div>
+                                    <div>🔐 <strong style="color:#fff;">Password:</strong> <span style="color:#00ffcc; font-family:monospace; font-size:16px; margin-left:5px;">${match.roomPass || 'Waiting...'}</span></div>
+                                </div>
+                            `;
+                        }
+
+                        card.innerHTML = cardHTML;
+                        displayZone.appendChild(card);
+                    }
+
+                    if (matchCount === 0) {
+                        displayZone.innerHTML = '<div class="no-matches">No active match found for this category.</div>';
+                    }
+                });
             });
         }
 
