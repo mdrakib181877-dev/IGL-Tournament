@@ -82,7 +82,7 @@
             border-radius: 12px;
             padding: 20px;
             display: flex;
-            flex-direction: column; /* রুম আইডির জন্য রেসপন্সিভ গ্রিড */
+            flex-direction: column;
             gap: 15px;
             transition: 0.3s;
         }
@@ -209,7 +209,6 @@
 </head>
 <body>
 
-    <!-- Header -->
     <header>
         <a href="home.html" class="back-btn">← Back to Home</a>
         <div class="game-title" id="current-game-title">Loading Game...</div>
@@ -217,19 +216,15 @@
     </header>
 
     <div class="container">
-        <!-- Match Category Tabs -->
         <div class="tabs-container" id="match-tabs">
-            <!-- Tabs will inject here dynamic based on game selection -->
-        </div>
+            </div>
 
-        <!-- Tournaments List -->
         <h2 style="margin-bottom: 20px; font-size: 20px; border-left: 4px solid #ff0055; padding-left: 10px;">Available Matches</h2>
         <div class="matches-list" id="matches-display">
             <div class="no-matches">Fetching live tournaments...</div>
         </div>
     </div>
 
-    <!-- 🎁 JOIN MATCH MODAL WINDOW -->
     <div class="modal" id="joinModal">
         <div class="modal-content">
             <span class="close-modal" id="closeModalBtn">&times;</span>
@@ -245,11 +240,10 @@
         </div>
     </div>
 
-    <!-- Firebase Script Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, onValue, get, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // Firebase Configuration
         const firebaseConfig = {
@@ -286,6 +280,32 @@
         let currentUserId = null;
         let selectedMatchId = null;
         let selectedMatchFee = 0;
+        let globalCategoryBanner = 'https://placehold.co/100x100?text=Match'; // ব্যাকআপ ইমেজ গ্লোবাল ভেরিয়েবল
+
+        // Safe Image URL Parser Function
+        function getSafeImageUrl(inputUrl) {
+            if(!inputUrl) return globalCategoryBanner;
+            try {
+                let cleanUrl = inputUrl.trim();
+                if (cleanUrl.toLowerCase().startsWith("http")) {
+                    cleanUrl = "https://" + cleanUrl.substring(cleanUrl.indexOf("//") + 2);
+                }
+                return encodeURI(cleanUrl);
+            } catch (e) {
+                return globalCategoryBanner;
+            }
+        }
+
+        // Realtime Category Banner Synchronization from Admin Settings
+        const catSettingsRef = ref(database, `admin_settings/categories/${selectedGame}`);
+        onValue(catSettingsRef, (snapshot) => {
+            const catData = snapshot.val();
+            if(catData && catData.image) {
+                globalCategoryBanner = catData.image.trim();
+                // ব্যানার ইমেজ রিয়েল-টাইমে আপডেট হওয়া মাত্র বর্তমান লিস্ট রিলোড হবে
+                loadMatches();
+            }
+        });
 
         // User authentication & Balance Sync
         onAuthStateChanged(auth, (user) => {
@@ -331,7 +351,6 @@
             const matchesRef = ref(database, 'matches/' + selectedGame);
             const registrationsRef = ref(database, `match_registrations/${selectedGame}`);
 
-            // লাইভ প্লেয়ার জয়েন স্ট্যাটাস ও স্লট লিমিট ট্র্যাকিং এর জন্য ডাবল ভ্যালু রিডিং লিসেনার
             onValue(matchesRef, (matchSnapshot) => {
                 onValue(registrationsRef, (regSnapshot) => {
                     displayZone.innerHTML = "";
@@ -354,12 +373,10 @@
 
                         matchCount++;
 
-                        // কতজন প্লেয়ার অলরেডি জয়েন করেছে তা গণনা করা
                         const matchRegs = regsData[key] || {};
                         const totalJoined = Object.keys(matchRegs).length;
-                        const maxSlots = match.totalSlots || 48; // অ্যাডমিন থেকে স্লট না দিলে ডিফল্ট ৪৮
+                        const maxSlots = match.totalSlots || 48;
 
-                        // লগইন করা ইউজার নিজে জয়েন করেছে কিনা তা চেক করা
                         let isUserJoined = false;
                         for (let regId in matchRegs) {
                             if (matchRegs[regId].userId === currentUserId) {
@@ -371,11 +388,13 @@
                         const card = document.createElement('div');
                         card.className = 'match-card';
 
-                        // মূল ম্যাচের ইনফরমেশন অংশ
+                        // অ্যাডমিন প্যানেলের লাইভ ক্যাটাগরি ইমেজ এখানে ইন্টিগ্রেট করা হয়েছে (getSafeImageUrl)
+                        const finalCardImage = match.logo ? getSafeImageUrl(match.logo) : getSafeImageUrl(globalCategoryBanner);
+
                         let cardHTML = `
                             <div class="match-main-info">
                                 <div class="match-details">
-                                    <img class="match-logo" src="${match.logo || 'https://placehold.co/100x100?text=Match'}" alt="Logo">
+                                    <img class="match-logo" src="${finalCardImage}" alt="Logo">
                                     <div class="info">
                                         <h3>${match.title}</h3>
                                         <p>Type: <span class="highlight">${match.type} (${match.mode})</span></p>
@@ -388,13 +407,12 @@
                                     <p style="margin-bottom:8px; font-weight:bold;">Fee: <span style="color:#00ffcc;">${match.entryFee} BDT</span></p>
                         `;
 
-                        // বাটন কন্ডিশন সেট করা (জয়েনড নাকি স্লট ফুল নাকি রেগুলার জয়েন)
                         if (isUserJoined) {
                             cardHTML += `<button class="join-btn" disabled style="background:#00ffcc; color:#000; font-weight:bold;">Joined</button>`;
                         } else if (totalJoined >= maxSlots) {
                             cardHTML += `<button class="join-btn" disabled>Slot Full</button>`;
                         } else {
-                            cardHTML += `<button class="join-btn" onclick="openJoinModal('${key}', '${match.title}', ${match.entryFee})">Join</button>`;
+                            cardHTML += `<button class="join-btn trigger-join" data-id="${key}" data-title="${match.title}" data-fee="${match.entryFee}">Join</button>`;
                         }
 
                         cardHTML += `
@@ -402,7 +420,6 @@
                             </div>
                         `;
 
-                        // যদি ইউজার এই ম্যাচে জয়েন করে থাকে, তবে তার নিচে লাইভ রুম আইডি ও পাসওয়ার্ড দেখাবে
                         if (isUserJoined) {
                             cardHTML += `
                                 <div class="room-details-box">
@@ -418,19 +435,29 @@
 
                     if (matchCount === 0) {
                         displayZone.innerHTML = '<div class="no-matches">No active match found for this category.</div>';
+                    } else {
+                        // মডিউল স্কোপ সেফ ইভেন্ট লিসেনার বাইন্ডিং
+                        document.querySelectorAll('.trigger-join').forEach(btn => {
+                            btn.onclick = function() {
+                                const mId = this.getAttribute('data-id');
+                                const mTitle = this.getAttribute('data-title');
+                                const mFee = parseInt(this.getAttribute('data-fee'));
+                                openJoinModal(mId, mTitle, mFee);
+                            };
+                        });
                     }
                 });
             });
         }
 
         // 3. Modal Popup Opening Logic
-        window.openJoinModal = function(matchId, matchTitle, entryFee) {
+        function openJoinModal(matchId, matchTitle, entryFee) {
             selectedMatchId = matchId;
             selectedMatchFee = entryFee;
             document.getElementById('modal-match-title').innerText = "Join: " + matchTitle;
             document.getElementById('modal-entry-fee').innerText = entryFee;
             document.getElementById('joinModal').style.display = 'flex';
-        };
+        }
 
         // Close Modal
         document.getElementById('closeModalBtn').onclick = () => {
@@ -449,13 +476,11 @@
             }
 
             try {
-                // Deduct balance from user profile
                 const newBalance = userWalletBalance - selectedMatchFee;
                 const userUpdate = {};
                 userUpdate[`users/${currentUserId}/balance`] = newBalance;
                 await update(ref(database), userUpdate);
 
-                // Add Player to Tournament Registration Node
                 const registrationRef = ref(database, `match_registrations/${selectedGame}/${selectedMatchId}`);
                 const newRegKey = push(registrationRef).key;
                 
