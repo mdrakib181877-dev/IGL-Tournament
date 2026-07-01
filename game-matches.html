@@ -124,15 +124,16 @@
             font-weight: bold;
         }
 
-        /* 🏆 New Sub-Prize Style Layout */
+        /* 🏆 New Sub-Prize & Per Kill Layout */
         .sub-prizes {
             display: flex;
+            flex-wrap: wrap;
             gap: 12px;
             margin-top: 6px;
             font-size: 12px;
             background: rgba(0, 0, 0, 0.2);
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 6px 10px;
+            border-radius: 6px;
             width: max-content;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -140,6 +141,12 @@
         .p1 { color: #ffcc00; }
         .p2 { color: #dfdfdf; }
         .p3 { color: #cd7f32; }
+        .per-kill { 
+            color: #ff0055; 
+            border-left: 1px solid rgba(255, 255, 255, 0.2); 
+            padding-left: 10px;
+            font-weight: bold !important;
+        }
 
         .match-action {
             text-align: right;
@@ -399,10 +406,11 @@
 
                         const finalCardImage = match.logo ? getSafeImageUrl(match.logo) : getSafeImageUrl(globalCategoryBanner);
 
-                        // 🏆 নতুন কোড: মেডেল ভিত্তিক প্রাইজ নিয়ে আসা হচ্ছে
+                        // 🏆 মেডেল ভিত্তিক প্রাইজ এবং পার-কিল ডেটা রিড করা
                         const p1 = match.prize1 || 0;
                         const p2 = match.prize2 || 0;
                         const p3 = match.prize3 || 0;
+                        const perKillAmount = match.perKill || 0; // ডেটাবেজ থেকে পার-কিল অ্যামাউন্ট আনা হচ্ছে
 
                         let cardHTML = `
                             <div class="match-main-info">
@@ -414,10 +422,12 @@
                                         <p>Time: <span>${match.time}</span></p>
                                         <p>Prize Pool: <span class="highlight">${match.prize} BDT</span></p>
                                         
+                                        <!-- 🎁 প্রাইজ বন্টন এবং পার-কিল অ্যামাউন্ট ডিসপ্লে -->
                                         <div class="sub-prizes">
                                             <span class="p1">🥇 1st: ${p1}৳</span>
                                             <span class="p2">🥈 2nd: ${p2}৳</span>
                                             <span class="p3">🥉 3rd: ${p3}৳</span>
+                                            <span class="per-kill">🎯 Per Kill: ${perKillAmount}৳</span>
                                         </div>
 
                                         <p style="margin-top:6px;">Slots Available: <span style="color:#ffcc00; font-weight:bold;">${totalJoined} / ${maxSlots}</span></p>
