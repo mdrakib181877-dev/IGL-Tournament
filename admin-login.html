@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - RB Tournament Zone</title>
+    <style>
+        /* Modern Neon Cyberpunk Admin Theme */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #0b0914, #120e24);
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .admin-box {
+            background: rgba(255, 255, 255, 0.02);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(255, 0, 85, 0.2);
+            border: 1px solid rgba(255, 0, 85, 0.3);
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+        }
+        h1 {
+            color: #ff0055;
+            font-size: 26px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+        }
+        p {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #ff0055;
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        input:focus {
+            outline: none;
+            border-color: #ff0055;
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.4);
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #ff0055;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+        .login-btn:hover {
+            background: #d00045;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.6);
+        }
+        .back-home {
+            display: inline-block;
+            margin-top: 20px;
+            color: #aaa;
+            text-decoration: none;
+            font-size: 13px;
+            transition: 0.3s;
+        }
+        .back-home:hover {
+            color: #fff;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="admin-box">
+        <h1>Admin Control</h1>
+        <p>RB Tournament Zone Protected Portal</p>
+        
+        <form id="admin-login-form">
+            <div class="form-group">
+                <label for="admin-email">Admin Email</label>
+                <input type="email" id="admin-email" placeholder="admin@rbtournament.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="admin-password">Secret Password</label>
+                <input type="password" id="admin-password" placeholder="••••••••" required>
+            </div>
+            
+            <button type="submit" class="login-btn">Verify & Enter</button>
+        </form>
+
+        <a href="index.html" class="back-home">← Back to User Login</a>
+    </div>
+
+    <!-- Firebase Script Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            authDomain: "igl-tournament-f788f.firebaseapp.com",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f",
+            storageBucket: "igl-tournament-f788f.firebasestorage.app",
+            messagingSenderId: "636254933423",
+            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
+            measurementId: "G-9EL1JQM2E4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Handle Admin Login Form Submission
+        document.getElementById('admin-login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('admin-email').value.trim();
+            const password = document.getElementById('admin-password').value;
+
+            // 1. Authenticate via Firebase Auth
+            signInWithEmailAndPassword(auth, email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+
+                    // 2. Security Check: Check if this UID is registered as Admin in Database
+                    const adminCheckRef = ref(database, 'admins/' + user.uid);
+                    const snapshot = await get(adminCheckRef);
+
+                    if (snapshot.exists() && snapshot.val().isAdmin === true) {
+                        // Authorized Admin
+                        alert("Access Granted! Welcome Admin.");
+                        // Store admin token state in localStorage for session protection
+                        localStorage.setItem('rbAdminSession', 'active');
+                        window.location.href = 'admin-dashboard.html';
+                    } else {
+                        // Logged in but NOT an admin
+                        alert("Access Denied! You are not registered as an Admin. (আপনি এই অ্যাপের এডমিন নন)");
+                        auth.signOut();
+                    }
+                })
+                .catch((error) => {
+                    alert("Authentication Failed: " + error.message);
+                });
+        });
+    </script>
+</body>
+</html>
