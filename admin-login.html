@@ -127,59 +127,29 @@
         <a href="index.html" class="back-home">← Back to User Login</a>
     </div>
 
-    <!-- Firebase Script Modules -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    <script>
+        // আপনার দেওয়া নির্ধারিত ইমেল এবং পাসওয়ার্ড
+        const FIXED_EMAIL = "admin12345@gmail.com";
+        const FIXED_PASSWORD = "admin@@##1122";
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
-            authDomain: "igl-tournament-f788f.firebaseapp.com",
-            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
-            projectId: "igl-tournament-f788f",
-            storageBucket: "igl-tournament-f788f.firebasestorage.app",
-            messagingSenderId: "636254933423",
-            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
-            measurementId: "G-9EL1JQM2E4"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-
-        // Handle Admin Login Form Submission
         document.getElementById('admin-login-form').addEventListener('submit', (e) => {
             e.preventDefault();
 
             const email = document.getElementById('admin-email').value.trim();
             const password = document.getElementById('admin-password').value;
 
-            // 1. Authenticate via Firebase Auth
-            signInWithEmailAndPassword(auth, email, password)
-                .then(async (userCredential) => {
-                    const user = userCredential.user;
-
-                    // 2. Security Check: Check if this UID is registered as Admin in Database
-                    const adminCheckRef = ref(database, 'admins/' + user.uid);
-                    const snapshot = await get(adminCheckRef);
-
-                    if (snapshot.exists() && snapshot.val().isAdmin === true) {
-                        // Authorized Admin
-                        alert("Access Granted! Welcome Admin.");
-                        // Store admin token state in localStorage for session protection
-                        localStorage.setItem('rbAdminSession', 'active');
-                        window.location.href = 'admin-dashboard.html';
-                    } else {
-                        // Logged in but NOT an admin
-                        alert("Access Denied! You are not registered as an Admin. (আপনি এই অ্যাপের এডমিন নন)");
-                        auth.signOut();
-                    }
-                })
-                .catch((error) => {
-                    alert("Authentication Failed: " + error.message);
-                });
+            // ইমেল এবং পাসওয়ার্ড চেক
+            if (email === FIXED_EMAIL && password === FIXED_PASSWORD) {
+                alert("Access Granted! Welcome Admin.");
+                
+                // সেশন সচল রাখার জন্য টোকেন সেট করা
+                localStorage.setItem('rbAdminSession', 'active');
+                
+                // ড্যাশবোর্ডে রিডাইরেক্ট
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                alert("Access Denied! ভুল ইমেল বা পাসওয়ার্ড দিয়েছেন।");
+            }
         });
     </script>
 </body>
