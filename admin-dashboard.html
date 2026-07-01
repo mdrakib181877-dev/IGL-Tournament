@@ -9,70 +9,201 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0b0914; color: #ffffff; display: flex; min-height: 100vh; }
         
-        .sidebar { width: 260px; background: #120e24; padding: 30px 20px; border-right: 1px solid rgba(255, 0, 85, 0.2); }
+        .sidebar { width: 260px; background: #120e24; padding: 30px 20px; border-right: 1px solid rgba(255, 0, 85, 0.2); display: flex; flex-direction: column; justify-content: space-between; }
         .sidebar h2 { color: #ff0055; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 40px; text-align: center; }
         .sidebar menu a { display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; transition: 0.3s; }
         .sidebar menu a.active, .sidebar menu a:hover { background: rgba(255, 0, 85, 0.1); color: #ff0055; border-left: 4px solid #ff0055; }
-        .logout-btn { background: #ff0055; color: #fff; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; display: block; margin-top: 50px; }
+        .logout-btn { background: #ff0055; color: #fff; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; }
         
         .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { font-size: 26px; }
+        
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; }
         .panel-card { background: #120e24; border: 1px solid rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; }
         .panel-card h3 { color: #00ffcc; margin-bottom: 20px; font-size: 18px; border-left: 3px solid #00ffcc; padding-left: 10px; text-transform: uppercase; }
         
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; color: #ccc; font-size: 13px; }
-        input, select, textarea { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; }
-        .music-row-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .action-btn { width: 100%; padding: 12px; background: #00ffcc; color: #0b0914; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
-        .action-btn:hover { background: #00ccaa; }
+        input, select, textarea { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 15px; }
+        .row-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .triple-row-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .music-row-group { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 10px; }
+        .triple-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+        
+        .action-btn { width: 100%; padding: 12px; background: #00ffcc; color: #0b0914; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
+        .action-btn:hover { background: #00ccaa; box-shadow: 0 0 15px rgba(0,255,204,0.4); }
+        .btn-notice { background: #ff0055; color: #fff; }
+        .btn-notice:hover { background: #d00045; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
+
+        .match-table { width: 100%; border-collapse: collapse; margin-top: 15px; color: #fff; text-align: left; }
+        .match-table th { color: #ff0055; border-bottom: 2px solid rgba(255, 0, 85, 0.3); padding: 12px; font-size: 14px; text-transform: uppercase; }
+        .match-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; vertical-align: middle; }
+        .manage-btn { border: none; padding: 6px 12px; margin: 2px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 12px; }
+        .btn-room { background: #00ffcc; color: #000; }
+        .btn-room:hover { background: #00ccaa; }
+        .btn-result { background: #ffcc00; color: #000; }
+        .btn-result:hover { background: #d4aa00; }
+        .btn-del { background: #ff0055; color: #fff; }
+        .btn-del:hover { background: #d00045; }
     </style>
 </head>
 <body>
 
     <div class="sidebar">
-        <h2>RB Admin Panel</h2>
-        <menu>
-            <a href="admin-dashboard.html" class="active">Tournament & Config</a>
-            <a href="admin-requests.html">Deposit & Users Requests</a>
-        </menu>
+        <div>
+            <h2>RB Admin Panel</h2>
+            <menu style="margin-top: 20px;">
+                <a href="admin-dashboard.html" class="active">Tournament & Config</a>
+                <a href="admin-requests.html">Deposit & Users Requests</a>
+            </menu>
+        </div>
         <a href="#" class="logout-btn" id="admin-logout">Secure Log Out</a>
     </div>
 
     <div class="main-content">
+        <div class="header">
+            <h1>Dashboard & Control Center</h1>
+            <div style="color: #ff0055; font-weight: bold;">Status: Secure Session Active</div>
+        </div>
+
         <div class="admin-grid">
-            <!-- Music Management -->
+            
+            <!-- 🎵 NEW: Music Management Panel -->
             <div class="panel-card" style="grid-column: span 2;">
-                <h3>🎵 Background Music Settings (YouTube Links)</h3>
+                <h3>🎵 Background Music Settings (Google Drive)</h3>
                 <form id="music-config-form">
                     <div class="music-row-group">
-                        <div class="form-group"><label>Home Page Music</label><input type="url" id="music-home" placeholder="YouTube URL"></div>
-                        <div class="form-group"><label>Free Fire Music</label><input type="url" id="music-freefire" placeholder="YouTube URL"></div>
-                        <div class="form-group"><label>PUBG Music</label><input type="url" id="music-pubg" placeholder="YouTube URL"></div>
-                        <div class="form-group"><label>eFootball Music</label><input type="url" id="music-efootball" placeholder="YouTube URL"></div>
+                        <div class="form-group"><label>Home Page Audio</label><input type="url" id="music-home" placeholder="Direct URL"></div>
+                        <div class="form-group"><label>Free Fire Audio</label><input type="url" id="music-freefire" placeholder="Direct URL"></div>
+                        <div class="form-group"><label>PUBG Audio</label><input type="url" id="music-pubg" placeholder="Direct URL"></div>
+                        <div class="form-group"><label>eFootball Audio</label><input type="url" id="music-efootball" placeholder="Direct URL"></div>
                     </div>
-                    <button type="submit" class="action-btn">Update All Music Links</button>
+                    <button type="submit" class="action-btn" style="background: #00ffcc;">Update All Music Links</button>
                 </form>
             </div>
 
-            <!-- Notice Board -->
             <div class="panel-card">
-                <h3>Live Notice Board</h3>
+                <h3>1. Live Notice Board</h3>
                 <form id="notice-form">
-                    <div class="form-group"><textarea id="app-notice" rows="3"></textarea></div>
-                    <button type="submit" class="action-btn" style="background:#ff0055; color:#fff;">Update Notice</button>
+                    <div class="form-group">
+                        <label>Scrolling Text Notice</label>
+                        <textarea id="app-notice" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="action-btn btn-notice">Update Live Notice</button>
                 </form>
             </div>
-            
-            <!-- Category Update -->
+
             <div class="panel-card">
-                <h3>Category Settings</h3>
+                <h3>2. Category Images & Labels</h3>
                 <form id="category-config-form">
-                    <div class="form-group"><select id="config-game-select"><option value="freefire">Free Fire</option><option value="pubg">PUBG Mobile</option><option value="ludo">Ludo</option><option value="efootball">eFootball</option></select></div>
-                    <div class="form-group"><input type="text" id="config-game-title" placeholder="Title"></div>
-                    <div class="form-group"><input type="url" id="config-game-img" placeholder="Image URL"></div>
-                    <button type="submit" class="action-btn">Update Category</button>
+                    <div class="form-group">
+                        <label>Target Game</label>
+                        <select id="config-game-select" required>
+                            <option value="freefire">Free Fire</option>
+                            <option value="pubg">PUBG Mobile</option>
+                            <option value="ludo">Ludo</option>
+                            <option value="efootball">eFootball</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Custom Title</label>
+                        <input type="text" id="config-game-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Image Link URL</label>
+                        <input type="url" id="config-game-img" required>
+                    </div>
+                    <button type="submit" class="action-btn">Update Category Look</button>
                 </form>
+            </div>
+
+            <div class="panel-card" style="grid-column: span 2;">
+                <h3>3. Create & Launch New Tournament Match</h3>
+                <form id="match-launch-form">
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label>Select Main Game</label>
+                            <select id="match-game" required>
+                                <option value="freefire">Free Fire</option>
+                                <option value="pubg">PUBG Mobile</option>
+                                <option value="ludo">Ludo</option>
+                                <option value="efootball">eFootball</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Match Sub-Category Mode</label>
+                            <input type="text" id="match-mode" required>
+                        </div>
+                    </div>
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label>Tournament Title Name</label>
+                            <input type="text" id="match-title" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Match Banner URL</label>
+                            <input type="url" id="match-logo">
+                        </div>
+                    </div>
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label>Match Type</label>
+                            <input type="text" id="match-type" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Schedule Time</label>
+                            <input type="text" id="match-time" required>
+                        </div>
+                    </div>
+                    <div class="triple-row-group">
+                        <div class="form-group">
+                            <label>Entry Fee</label>
+                            <input type="number" id="match-fee" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Prize Pool</label>
+                            <input type="number" id="match-prize" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Per Kill Rate</label>
+                            <input type="number" id="match-perkill" min="0" value="0" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="border: 1px dashed rgba(0, 255, 204, 0.3); padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.2);">
+                        <label style="color: #00ffcc; font-weight: bold; margin-bottom: 10px;">🏆 Standings Prize Distribution</label>
+                        <div class="triple-group">
+                            <div class="form-group"><label>1st Prize</label><input type="number" id="match-prize1" min="0" required></div>
+                            <div class="form-group"><label>2nd Prize</label><input type="number" id="match-prize2" min="0" required></div>
+                            <div class="form-group"><label>3rd Prize</label><input type="number" id="match-prize3" min="0" required></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Total Player Slots</label>
+                        <input type="number" id="match-slots" min="1" value="48" required>
+                    </div>
+                    <button type="submit" class="action-btn" style="background:#ff0055; color:#fff;">Launch Tournament Live 🚀</button>
+                </form>
+            </div>
+
+            <div class="panel-card" style="grid-column: span 2;">
+                <h3>4. Live Match Management</h3>
+                <div style="overflow-x: auto;">
+                    <table class="match-table">
+                        <thead><tr><th>Game / Title</th><th>Schedule, Fee & Slots</th><th>Room ID / Pass</th><th>Actions</th></tr></thead>
+                        <tbody id="live-match-list"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="panel-card" style="grid-column: span 2; border: 1px solid rgba(255, 204, 0, 0.2);">
+                <h3 style="color: #ffcc00; border-left-color: #ffcc00;">5. Completed Match Results Management</h3>
+                <div style="overflow-x: auto;">
+                    <table class="match-table">
+                        <thead><tr><th>Game / Title</th><th>Played Date & Info</th><th>Winners</th><th>Action</th></tr></thead>
+                        <tbody id="completed-results-list"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -80,7 +211,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, update, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
@@ -94,35 +225,87 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const database = getDatabase(app);
         const auth = getAuth(app);
+        const database = getDatabase(app);
 
-        // Music Save Logic
+        // Music Logic
         document.getElementById('music-config-form').addEventListener('submit', (e) => {
             e.preventDefault();
             update(ref(database, 'admin_settings/music'), {
-                home: document.getElementById('music-home').value,
-                freefire: document.getElementById('music-freefire').value,
-                pubg: document.getElementById('music-pubg').value,
-                efootball: document.getElementById('music-efootball').value
-            }).then(() => alert("Music Links Updated!"));
+                home: document.getElementById('music-home').value.trim(),
+                freefire: document.getElementById('music-freefire').value.trim(),
+                pubg: document.getElementById('music-pubg').value.trim(),
+                efootball: document.getElementById('music-efootball').value.trim()
+            }).then(() => alert("Music links updated successfully!"));
         });
 
-        // Load current data
         onValue(ref(database, 'admin_settings/music'), (snapshot) => {
             const data = snapshot.val();
-            if(data) {
+            if (data) {
                 document.getElementById('music-home').value = data.home || "";
                 document.getElementById('music-freefire').value = data.freefire || "";
                 document.getElementById('music-pubg').value = data.pubg || "";
                 document.getElementById('music-efootball').value = data.efootball || "";
             }
         });
-        
-        // Log out logic
+
+        // Your existing JS code starts here
+        if(localStorage.getItem('rbAdminSession') !== 'active') window.location.href = 'admin-login.html';
+
+        document.getElementById('notice-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            update(ref(database, 'admin_settings/'), { notice: document.getElementById('app-notice').value.trim() })
+            .then(() => { alert("Live Notice updated!"); document.getElementById('notice-form').reset(); });
+        });
+
+        document.getElementById('category-config-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const game = document.getElementById('config-game-select').value;
+            update(ref(database, `admin_settings/categories/${game}`), {
+                title: document.getElementById('config-game-title').value.trim(),
+                image: document.getElementById('config-game-img').value.trim()
+            }).then(() => { alert("Category updated!"); document.getElementById('category-config-form').reset(); });
+        });
+
+        document.getElementById('match-launch-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const gameNode = document.getElementById('match-game').value;
+            const matchData = {
+                mode: document.getElementById('match-mode').value.trim(),
+                title: document.getElementById('match-title').value.trim(),
+                logo: document.getElementById('match-logo').value.trim(),
+                type: document.getElementById('match-type').value.trim(),
+                time: document.getElementById('match-time').value.trim(),
+                entryFee: parseInt(document.getElementById('match-fee').value),
+                prize: parseInt(document.getElementById('match-prize').value),
+                perKill: parseInt(document.getElementById('match-perkill').value || 0),
+                prize1: parseInt(document.getElementById('match-prize1').value || 0),
+                prize2: parseInt(document.getElementById('match-prize2').value || 0),
+                prize3: parseInt(document.getElementById('match-prize3').value || 0),
+                totalSlots: parseInt(document.getElementById('match-slots').value || 48), 
+                roomId: "Not Set", roomPass: "Not Set"   
+            };
+            set(push(ref(database, 'matches/' + gameNode)), matchData)
+            .then(() => { alert("Match launched!"); document.getElementById('match-launch-form').reset(); });
+        });
+
+        onValue(ref(database, 'matches'), (snapshot) => {
+            const tableBody = document.getElementById('live-match-list');
+            tableBody.innerHTML = "";
+            if(!snapshot.exists()) return;
+            snapshot.forEach((gameSnap) => {
+                gameSnap.forEach((matchSnap) => {
+                    const match = matchSnap.val();
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><b>${gameSnap.key}</b><br>${match.title}</td><td>${match.time}<br>Fee: ${match.entryFee}</td><td>ID: ${match.roomId}<br>Pass: ${match.roomPass}</td><td><button class="manage-btn btn-room" onclick="alert('Use Edit function')">Room</button> <button class="manage-btn btn-del" onclick="remove(ref(database, 'matches/${gameSnap.key}/${matchSnap.key}'))">Delete</button></td>`;
+                    tableBody.appendChild(tr);
+                });
+            });
+        });
+
         document.getElementById('admin-logout').addEventListener('click', () => {
-            signOut(auth).then(() => window.location.href = 'admin-login.html');
+            signOut(auth).then(() => { localStorage.removeItem('rbAdminSession'); window.location.href = 'admin-login.html'; });
         });
     </script>
 </body>
-</html>
+                        </html>
