@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - RB Tournament Zone</title>
+    <title>Home - IGL Tournament Zone</title>
     <style>
         /* Gamer Dark Theme Styling */
         * {
@@ -285,7 +285,6 @@
         // Security Check: Verify if User is Logged In
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // Fetch User Details from Realtime Database
                 const userRef = ref(database, 'users/' + user.uid);
                 onValue(userRef, (snapshot) => {
                     const data = snapshot.val();
@@ -296,37 +295,51 @@
                     }
                 });
             } else {
-                // If not logged in, kick out to Login Page
                 window.location.href = 'index.html';
             }
         });
+
+        // Safe Image URL Parser Function
+        function setSafeImage(elementId, inputUrl) {
+            if(!inputUrl) return;
+            try {
+                let cleanUrl = inputUrl.trim();
+                // বড় হাতের Https:// থাকলে ছোট হাতের করে দেবে
+                if (cleanUrl.toLowerCase().startsWith("http")) {
+                    cleanUrl = "https://" + cleanUrl.substring(cleanUrl.indexOf("//") + 2);
+                }
+                // ব্র্যাকেট বা স্পেশাল ক্যারেক্টার ক্লিন করার লজিক
+                document.getElementById(elementId).src = encodeURI(cleanUrl);
+            } catch (e) {
+                console.error("Image loading failed for " + elementId, e);
+            }
+        }
 
         // Dynamic Categories & Notice board data fetch from Admin settings
         const settingsRef = ref(database, 'admin_settings/');
         onValue(settingsRef, (snapshot) => {
             const settings = snapshot.val();
             if(settings) {
-                // Live Notice Update
                 if(settings.notice) {
                     document.getElementById('live-notice').innerText = settings.notice;
                 }
-                // Live Category Images from Admin Links
                 if(settings.categories) {
                     const cats = settings.categories;
-                    if(cats.freefire) {
-                        document.getElementById('img-freefire').src = cats.freefire.image || document.getElementById('img-freefire').src;
+                    
+                    if(cats.freefire && cats.freefire.image) {
+                        setSafeImage('img-freefire', cats.freefire.image);
                         document.getElementById('title-freefire').innerText = cats.freefire.title || "Free Fire";
                     }
-                    if(cats.pubg) {
-                        document.getElementById('img-pubg').src = cats.pubg.image || document.getElementById('img-pubg').src;
+                    if(cats.pubg && cats.pubg.image) {
+                        setSafeImage('img-pubg', cats.pubg.image);
                         document.getElementById('title-pubg').innerText = cats.pubg.title || "PUBG Mobile";
                     }
-                    if(cats.ludo) {
-                        document.getElementById('img-ludo').src = cats.ludo.image || document.getElementById('img-ludo').src;
+                    if(cats.ludo && cats.ludo.image) {
+                        setSafeImage('img-ludo', cats.ludo.image);
                         document.getElementById('title-ludo').innerText = cats.ludo.title || "Ludo";
                     }
-                    if(cats.efootball) {
-                        document.getElementById('img-efootball').src = cats.efootball.image || document.getElementById('img-efootball').src;
+                    if(cats.efootball && cats.efootball.image) {
+                        setSafeImage('img-efootball', cats.efootball.image);
                         document.getElementById('title-efootball').innerText = cats.efootball.title || "eFootball";
                     }
                 }
@@ -343,7 +356,6 @@
     </script>
 
     <script>
-        // Navigation Function to Game Match Page
         function goToGame(gameName) {
             localStorage.setItem('selectedGame', gameName);
             window.location.href = 'game-matches.html';
