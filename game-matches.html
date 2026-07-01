@@ -123,6 +123,24 @@
             color: #00ffcc;
             font-weight: bold;
         }
+
+        /* 🏆 New Sub-Prize Style Layout */
+        .sub-prizes {
+            display: flex;
+            gap: 12px;
+            margin-top: 6px;
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 4px 8px;
+            border-radius: 4px;
+            width: max-content;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .sub-prizes span { font-weight: 500; }
+        .p1 { color: #ffcc00; }
+        .p2 { color: #dfdfdf; }
+        .p3 { color: #cd7f32; }
+
         .match-action {
             text-align: right;
         }
@@ -217,7 +235,7 @@
 
     <div class="container">
         <div class="tabs-container" id="match-tabs">
-            </div>
+        </div>
 
         <h2 style="margin-bottom: 20px; font-size: 20px; border-left: 4px solid #ff0055; padding-left: 10px;">Available Matches</h2>
         <div class="matches-list" id="matches-display">
@@ -261,10 +279,8 @@
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Get Selected Game from LocalStorage
         const selectedGame = localStorage.getItem('selectedGame') || 'freefire';
         
-        // Define Categories Map based on your requirements
         const gameMetaData = {
             freefire: { title: "Free Fire", modes: ["All", "CS Match", "BR Match", "Lone Wolf"] },
             pubg: { title: "PUBG Mobile", modes: ["All", "Classic BR", "TDM Arena"] },
@@ -272,7 +288,6 @@
             efootball: { title: "eFootball", modes: ["All", "Solo Match"] }
         };
 
-        // Set Header Title
         document.getElementById('current-game-title').innerText = gameMetaData[selectedGame].title;
 
         let currentActiveMode = "All";
@@ -280,9 +295,8 @@
         let currentUserId = null;
         let selectedMatchId = null;
         let selectedMatchFee = 0;
-        let globalCategoryBanner = 'https://placehold.co/100x100?text=Match'; // ব্যাকআপ ইমেজ গ্লোবাল ভেরিয়েবল
+        let globalCategoryBanner = 'https://placehold.co/100x100?text=Match'; 
 
-        // Safe Image URL Parser Function
         function getSafeImageUrl(inputUrl) {
             if(!inputUrl) return globalCategoryBanner;
             try {
@@ -296,18 +310,15 @@
             }
         }
 
-        // Realtime Category Banner Synchronization from Admin Settings
         const catSettingsRef = ref(database, `admin_settings/categories/${selectedGame}`);
         onValue(catSettingsRef, (snapshot) => {
             const catData = snapshot.val();
             if(catData && catData.image) {
                 globalCategoryBanner = catData.image.trim();
-                // ব্যানার ইমেজ রিয়েল-টাইমে আপডেট হওয়া মাত্র বর্তমান লিস্ট রিলোড হবে
                 loadMatches();
             }
         });
 
-        // User authentication & Balance Sync
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 currentUserId = user.uid;
@@ -325,7 +336,6 @@
             }
         });
 
-        // 1. Generate Category Tabs Dynamic
         function loadTabs() {
             const tabsBox = document.getElementById('match-tabs');
             tabsBox.innerHTML = "";
@@ -343,7 +353,6 @@
             });
         }
 
-        // 2. Fetch & Render Matches from Firebase Realtime Database
         function loadMatches() {
             const displayZone = document.getElementById('matches-display');
             displayZone.innerHTML = '<div class="no-matches">Searching for live tournaments...</div>';
@@ -388,8 +397,12 @@
                         const card = document.createElement('div');
                         card.className = 'match-card';
 
-                        // অ্যাডমিন প্যানেলের লাইভ ক্যাটাগরি ইমেজ এখানে ইন্টিগ্রেট করা হয়েছে (getSafeImageUrl)
                         const finalCardImage = match.logo ? getSafeImageUrl(match.logo) : getSafeImageUrl(globalCategoryBanner);
+
+                        // 🏆 নতুন কোড: মেডেল ভিত্তিক প্রাইজ নিয়ে আসা হচ্ছে
+                        const p1 = match.prize1 || 0;
+                        const p2 = match.prize2 || 0;
+                        const p3 = match.prize3 || 0;
 
                         let cardHTML = `
                             <div class="match-main-info">
@@ -400,7 +413,14 @@
                                         <p>Type: <span class="highlight">${match.type} (${match.mode})</span></p>
                                         <p>Time: <span>${match.time}</span></p>
                                         <p>Prize Pool: <span class="highlight">${match.prize} BDT</span></p>
-                                        <p style="margin-top:4px;">Slots Available: <span style="color:#ffcc00; font-weight:bold;">${totalJoined} / ${maxSlots}</span></p>
+                                        
+                                        <div class="sub-prizes">
+                                            <span class="p1">🥇 1st: ${p1}৳</span>
+                                            <span class="p2">🥈 2nd: ${p2}৳</span>
+                                            <span class="p3">🥉 3rd: ${p3}৳</span>
+                                        </div>
+
+                                        <p style="margin-top:6px;">Slots Available: <span style="color:#ffcc00; font-weight:bold;">${totalJoined} / ${maxSlots}</span></p>
                                     </div>
                                 </div>
                                 <div class="match-action">
@@ -436,7 +456,6 @@
                     if (matchCount === 0) {
                         displayZone.innerHTML = '<div class="no-matches">No active match found for this category.</div>';
                     } else {
-                        // মডিউল স্কোপ সেফ ইভেন্ট লিসেনার বাইন্ডিং
                         document.querySelectorAll('.trigger-join').forEach(btn => {
                             btn.onclick = function() {
                                 const mId = this.getAttribute('data-id');
@@ -450,7 +469,6 @@
             });
         }
 
-        // 3. Modal Popup Opening Logic
         function openJoinModal(matchId, matchTitle, entryFee) {
             selectedMatchId = matchId;
             selectedMatchFee = entryFee;
@@ -459,12 +477,10 @@
             document.getElementById('joinModal').style.display = 'flex';
         }
 
-        // Close Modal
         document.getElementById('closeModalBtn').onclick = () => {
             document.getElementById('joinModal').style.display = 'none';
         };
 
-        // 4. Handle Match Joining & Wallet Deduction System
         document.getElementById('join-match-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const playerUID = document.getElementById('player-uid').value.trim();
