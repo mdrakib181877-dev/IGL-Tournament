@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - RB Tournament Zone</title>
+    <style>
+        /* Modern Cyberpunk Admin Dashboard Theme */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body { background: #0b0914; color: #ffffff; display: flex; min-height: 100vh; }
+        
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px; background: #120e24; padding: 30px 20px;
+            border-right: 1px solid rgba(255, 0, 85, 0.2); display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .sidebar h2 { color: #ff0055; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 40px; text-align: center; }
+        .sidebar menu a {
+            display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; transition: 0.3s;
+        }
+        .sidebar menu a.active, .sidebar menu a:hover { background: rgba(255, 0, 85, 0.1); color: #ff0055; border-left: 4px solid #ff0055; }
+        .logout-btn { background: #ff0055; color: #fff; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; }
+        
+        /* Main Panel Content */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { font-size: 26px; }
+        
+        /* Grid Boxes for Settings */
+        .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; }
+        .panel-card { background: #120e24; border: 1px solid rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; }
+        .panel-card h3 { color: #00ffcc; margin-bottom: 20px; font-size: 18px; border-left: 3px solid #00ffcc; padding-left: 10px; text-transform: uppercase; }
+        
+        /* Form components */
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; color: #ccc; font-size: 13px; }
+        input, select, textarea {
+            width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 15px;
+        }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #ff0055; }
+        .row-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .action-btn {
+            width: 100%; padding: 12px; background: #00ffcc; color: #0b0914; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px;
+        }
+        .action-btn:hover { background: #00ccaa; box-shadow: 0 0 15px rgba(0,255,204,0.4); }
+        .btn-notice { background: #ff0055; color: #fff; }
+        .btn-notice:hover { background: #d00045; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div>
+            <h2>RB Admin Panel</h2>
+            <menu style="margin-top: 20px;">
+                <a href="admin-dashboard.html" class="active">Tournament & Config</a>
+                <a href="admin-requests.html">Deposit & Users Requests</a>
+            </menu>
+        </div>
+        <a href="#" class="logout-btn" id="admin-logout">Secure Log Out</a>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Dashboard & Control Center</h1>
+            <div style="color: #ff0055; font-weight: bold;">Status: Secure Session Active</div>
+        </div>
+
+        <div class="admin-grid">
+            <div class="panel-card">
+                <h3>1. Live Notice Board</h3>
+                <form id="notice-form">
+                    <div class="form-group">
+                        <label>Scrolling Text Notice (হোম পেজের স্ক্রলিং নোটিশ)</label>
+                        <textarea id="app-notice" rows="3" placeholder="Enter scrolling warning or disclaimer notice here..." required></textarea>
+                    </div>
+                    <button type="submit" class="action-btn btn-notice">Update Live Notice</button>
+                </form>
+            </div>
+
+            <div class="panel-card">
+                <h3>2. Category Images & Labels</h3>
+                <form id="category-config-form">
+                    <div class="form-group">
+                        <label>Target Game Category (গেম সিলেক্ট করুন)</label>
+                        <select id="config-game-select" required>
+                            <option value="freefire">Free Fire</option>
+                            <option value="pubg">PUBG Mobile</option>
+                            <option value="ludo">Ludo</option>
+                            <option value="efootball">eFootball</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Custom Title Label (ক্যাটাগরির নাম)</label>
+                        <input type="text" id="config-game-title" placeholder="e.g. Free Fire Premium" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Direct Image Link URL (লোগো/ব্যানার ইমেজ লিংক)</label>
+                        <input type="url" id="config-game-img" placeholder="https://example.com/image.jpg" required>
+                    </div>
+                    <button type="submit" class="action-btn">Update Category Look</button>
+                </form>
+            </div>
+
+            <div class="panel-card" style="grid-column: span 2;">
+                <h3>3. Create & Launch New Tournament Match</h3>
+                <form id="match-launch-form">
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label>Select Main Game</label>
+                            <select id="match-game" required>
+                                <option value="freefire">Free Fire</option>
+                                <option value="pubg">PUBG Mobile</option>
+                                <option value="ludo">Ludo</option>
+                                <option value="efootball">eFootball</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Match Sub-Category Mode (মোড)</label>
+                            <input type="text" id="match-mode" placeholder="e.g. CS Match, BR Match, Solo Match" required>
+                        </div>
+                    </div>
+
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label>Tournament Title Name (ম্যাচের নাম)</label>
+                            <input type="text" id="match-title" placeholder="e.g. Daily Clash Squad Vol-12" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Match Specific Logo/Banner URL Link</label>
+                            <input type="url" id="match-logo" placeholder="https://example.com/match-logo.jpg">
+                        </div>
+                    </div>
+
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label>Match Type</label>
+                            <input type="text" id="match-type" placeholder="e.g. Solo, Duo, Squad, 4-Player" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Schedule Time & Date (ম্যাচের সময়)</label>
+                            <input type="text" id="match-time" placeholder="e.g. 15 July - 08:00 PM" required>
+                        </div>
+                    </div>
+
+                    <div class="row-group">
+                        <div class="form-group">
+                            <label>Entry Fee (BDT)</label>
+                            <input type="number" id="match-fee" placeholder="e.g. 50" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Total Prize Pool (BDT)</label>
+                            <input type="number" id="match-prize" placeholder="e.g. 500" min="0" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="action-btn" style="background:#ff0055; color:#fff;">Launch Tournament Live 🚀</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, update, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            authDomain: "igl-tournament-f788f.firebaseapp.com",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f",
+            storageBucket: "igl-tournament-f788f.firebasestorage.app",
+            messagingSenderId: "636254933423",
+            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
+            measurementId: "G-9EL1JQM2E4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Session Protection Check
+        if(localStorage.getItem('rbAdminSession') !== 'active') {
+            window.location.href = 'admin-login.html';
+        }
+
+        // 1. Notice Board Submission
+        document.getElementById('notice-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const noticeText = document.getElementById('app-notice').value.trim();
+            
+            update(ref(database, 'admin_settings/'), {
+                notice: noticeText
+            }).then(() => {
+                alert("Live Notice board updated globally!");
+                document.getElementById('notice-form').reset();
+            });
+        });
+
+        // 2. Category Images Config Submission
+        document.getElementById('category-config-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const selectedGame = document.getElementById('config-game-select').value;
+            const customTitle = document.getElementById('config-game-title').value.trim();
+            const imageUrl = document.getElementById('config-game-img').value.trim();
+
+            const updates = {};
+            updates[`admin_settings/categories/${selectedGame}`] = {
+                title: customTitle,
+                image: imageUrl
+            };
+
+            update(ref(database), updates).then(() => {
+                alert("Category design links changed successfully!");
+                document.getElementById('category-config-form').reset();
+            });
+        });
+
+        // 3. Launching New Dynamic Match Tournament
+        document.getElementById('match-launch-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const gameNode = document.getElementById('match-game').value;
+            
+            const matchData = {
+                mode: document.getElementById('match-mode').value.trim(),
+                title: document.getElementById('match-title').value.trim(),
+                logo: document.getElementById('match-logo').value.trim(),
+                type: document.getElementById('match-type').value.trim(),
+                time: document.getElementById('match-time').value.trim(),
+                entryFee: parseInt(document.getElementById('match-fee').value),
+                prize: parseInt(document.getElementById('match-prize').value)
+            };
+
+            const targetMatchesRef = ref(database, 'matches/' + gameNode);
+            const newMatchPushKey = push(targetMatchesRef).key;
+
+            set(ref(database, `matches/${gameNode}/${newMatchPushKey}`), matchData)
+                .then(() => {
+                    alert("Tournament launched live on user feeds successfully!");
+                    document.getElementById('match-launch-form').reset();
+                })
+                .catch(err => alert("Error layout: " + err.message));
+        });
+
+        // Admin Security Logout Action
+        document.getElementById('admin-logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                localStorage.removeItem('rbAdminSession');
+                window.location.href = 'admin-login.html';
+            });
+        });
+    </script>
+</body>
+                              </html>
