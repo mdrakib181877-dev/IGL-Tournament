@@ -58,17 +58,25 @@
         }
         .badge.pending { background: rgba(255, 165, 0, 0.15); color: #ffa500; border: 1px solid #ffa500; }
         .badge.approved { background: rgba(0, 255, 204, 0.15); color: #00ffcc; border: 1px solid #00ffcc; }
+        .badge.rejected { background: rgba(255, 0, 85, 0.15); color: #ff0055; border: 1px solid #ff0055; }
+        
+        .action-flex { display: flex; gap: 6px; }
         
         .approve-btn {
             background: #00ffcc; color: #0b0914; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 12px;
         }
-        .approve-btn:hover { background: #00ccaa; box-shadow: 0 0 10px rgba(0,255,204,0.4); }
-        .approve-btn:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; }
+        .approve-btn:hover:not(:disabled) { background: #00ccaa; box-shadow: 0 0 10px rgba(0,255,204,0.4); }
+        .approve-btn:disabled { background: #222; color: #555; cursor: not-allowed; box-shadow: none; }
+
+        .reject-btn {
+            background: #ff0055; color: #fff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 12px;
+        }
+        .reject-btn:hover:not(:disabled) { background: #d00045; box-shadow: 0 0 10px rgba(255,0,85,0.4); }
+        .reject-btn:disabled { display: none; } /* অপশনটি অলরেডি অ্যাকশন হয়ে গেলে রিজেক্ট বাটন হাইড হয়ে যাবে */
     </style>
 </head>
 <body>
 
-    <!-- Sidebar Navigation -->
     <div class="sidebar">
         <div>
             <h2>RB Admin Panel</h2>
@@ -80,14 +88,12 @@
         <a href="#" class="logout-btn" id="admin-logout">Secure Log Out</a>
     </div>
 
-    <!-- Main Workspace -->
     <div class="main-content">
         <div class="header">
             <h1>Deposit Requests Management</h1>
             <div style="color: #00ffcc; font-weight: bold;">Realtime Synchronized</div>
         </div>
 
-        <!-- Request List Table -->
         <div class="table-container">
             <h3>Incoming Manual Deposits</h3>
             <table>
@@ -103,7 +109,6 @@
                     </tr>
                 </thead>
                 <tbody id="deposit-requests-table">
-                    <!-- Dynamic Data Loading via Firebase Modules -->
                     <tr>
                         <td colspan="7" style="text-align: center; color: #aaa; padding: 30px;">Loading requests...</td>
                     </tr>
@@ -112,7 +117,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDK Systems Connection -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -157,7 +161,8 @@
                 const request = data[key];
                 const tr = document.createElement('tr');
 
-                const statusClass = request.status.toLowerCase();
+                const statusClass = request.status ? request.status.toLowerCase() : 'pending';
+                const isProcessed = request.status === "Approved" || request.status === "Rejected";
                 const isApproved = request.status === "Approved";
 
                 tr.innerHTML = `
@@ -166,26 +171,38 @@
                     <td style="font-weight: bold; color: #00ffcc;">${request.amount} BDT</td>
                     <td>${request.sender}</td>
                     <td style="font-family: monospace; letter-spacing: 0.5px;">${request.trxid}</td>
-                    <td><span class="badge ${statusClass}">${request.status}</span></td>
+                    <td><span class="badge ${statusClass}">${request.status || 'Pending'}</span></td>
                     <td>
-                        <button class="approve-btn" data-id="${key}" data-user="${request.userId}" data-amount="${request.amount}" ${isApproved ? 'disabled' : ''}>
-                            ${isApproved ? 'Approved ✓' : 'Approve'}
-                        </button>
+                        <div class="action-flex">
+                            <button class="approve-btn" data-id="${key}" data-user="${request.userId}" data-amount="${request.amount}" ${isProcessed ? 'disabled' : ''}>
+                                ${isApproved ? 'Approved ✓' : isProcessed ? 'Processed' : 'Approve'}
+                            </button>
+                            <button class="reject-btn" data-id="${key}" ${isProcessed ? 'disabled' : ''}>
+                                Reject
+                            </button>
+                        </div>
                     </td>
                 `;
                 requestsTableBody.appendChild(tr);
             });
 
-            // Bind Event Listeners to all newly generated Approve Buttons
-            const approveButtons = document.querySelectorAll('.approve-btn');
-            approveButtons.forEach(btn => {
-                btn.addEventListener('click', function() {
+            // Bind Event Listeners to Approve Buttons
+            document.querySelectorAll('.approve-btn').forEach(btn => {
+                btn.onclick = function() {
                     const requestId = this.getAttribute('data-id');
                     const targetUserId = this.getAttribute('data-user');
                     const depositAmount = parseInt(this.getAttribute('data-amount'));
 
                     approveUserDeposit(requestId, targetUserId, depositAmount);
-                });
+                };
+            });
+
+            // Bind Event Listeners to Reject Buttons
+            document.querySelectorAll('.reject-btn').forEach(btn => {
+                btn.onclick = function() {
+                    const requestId = this.getAttribute('data-id');
+                    rejectUserDeposit(requestId);
+                };
             });
         });
 
@@ -195,13 +212,10 @@
 
             const userBalanceRef = ref(database, `users/${userId}/balance`);
 
-            // Use atomical transaction operation to safely update balance without risking collisions
             runTransaction(userBalanceRef, (currentBalance) => {
-                // If path doesn't exist, start ledger at 0
                 return (currentBalance || 0) + amount;
             })
             .then(() => {
-                // Once the money safely lands in the user profile ledger, change request node status to Approved
                 update(ref(database, `deposit_requests/${requestId}`), {
                     status: "Approved"
                 }).then(() => {
@@ -210,6 +224,19 @@
             })
             .catch((error) => {
                 alert("Transaction processing crashed: " + error.message);
+            });
+        }
+
+        // Reject Deposit Function (No Balance Update, Just Status Changes to Rejected)
+        function rejectUserDeposit(requestId) {
+            if(!confirm("Are you sure you want to REJECT this deposit request?")) return;
+
+            update(ref(database, `deposit_requests/${requestId}`), {
+                status: "Rejected"
+            }).then(() => {
+                alert("Deposit request has been Rejected.");
+            }).catch((error) => {
+                alert("Error rejecting request: " + error.message);
             });
         }
 
