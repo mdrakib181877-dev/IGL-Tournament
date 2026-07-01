@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deposit - RB Tournament Zone</title>
+    <style>
+        /* Gamer Dark Theme Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #0f0c20;
+            color: #ffffff;
+            padding-bottom: 50px;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-btn {
+            color: #00ffcc;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 650px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* ⚠️ 5 Minutes Notice Banner */
+        .alert-notice {
+            background: linear-gradient(90deg, #ff0055, #990033);
+            border: 1px solid #ff3377;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+            letter-spacing: 0.5px;
+            line-height: 1.5;
+        }
+
+        /* Number Cards Design */
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .method-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        .method-card.bikaash { border-color: #e2136e; }
+        .method-card.nagad { border-color: #ff6000; }
+        .method-card.rocket { border-color: #8c3494; }
+        
+        .method-card h3 {
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+        .method-card p {
+            font-size: 15px;
+            color: #00ffcc;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .method-card span {
+            font-size: 11px;
+            color: #aaa;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* Deposit Form Styling */
+        .deposit-form-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .deposit-form-box h2 {
+            font-size: 20px;
+            color: #00ffcc;
+            margin-bottom: 25px;
+            text-align: center;
+            text-transform: uppercase;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+            font-size: 14px;
+        }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        select:focus, input:focus {
+            outline: none;
+            border-color: #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+        select option {
+            background: #15102a;
+            color: #fff;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #00ffcc;
+            color: #0f0c20;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background: #00ccaa;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="home.html" class="back-btn">← Back to Dashboard</a>
+        <div style="font-size: 20px; font-weight: bold; color: #fff;">ADD MONEY</div>
+        <div style="color: #00ffcc; font-weight: bold;">Wallet Balance: <span id="deposit-page-balance">0</span> BDT</div>
+    </header>
+
+    <div class="container">
+        <!-- ⚠️ Highlighted 5 Minutes Alert Notice -->
+        <div class="alert-notice">
+            📢 পেমেন্ট করার ৫ মিনিট পর আপনার ব্যালেন্সটি অ্যাকাউন্ট অ্যাড হয়ে যাবে।<br>
+            <span style="font-size: 13px; font-weight: normal; color: #ffccd4;">(নিচের নাম্বারগুলোতে টাকা পাঠানোর পর সঠিক তথ্য দিয়ে ফর্মটি পূরণ করুন।)</span>
+        </div>
+
+        <!-- Payment Number Cards -->
+        <div class="payment-methods">
+            <!-- Bkash -->
+            <div class="method-card bikaash">
+                <h3 style="color: #e2136e;">Bkash</h3>
+                <p>017XXXXXXXX</p>
+                <span>Send Money (Personal)</span>
+            </div>
+            <!-- Nagad -->
+            <div class="method-card nagad">
+                <h3 style="color: #ff6000;">Nagad</h3>
+                <p>019XXXXXXXX</p>
+                <span>Send Money (Personal)</span>
+            </div>
+            <!-- Rocket -->
+            <div class="method-card rocket">
+                <h3 style="color: #8c3494;">Rocket</h3>
+                <p>018XXXXXXXX-X</p>
+                <span>Send Money (Personal)</span>
+            </div>
+        </div>
+
+        <!-- Deposit Request Form Box -->
+        <div class="deposit-form-box">
+            <h2>Submit Deposit Request</h2>
+            
+            <form id="deposit-request-form">
+                <div class="form-group">
+                    <label for="payment-method">Payment Method (টাকা পাঠানোর মাধ্যম):</label>
+                    <select id="payment-method" required>
+                        <option value="" disabled selected>Select Method</option>
+                        <option value="Bkash">Bkash (বিকাশ)</option>
+                        <option value="Nagad">Nagad (নগদ)</option>
+                        <option value="Rocket">Rocket (রকেট)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount">Amount (টাকার পরিমাণ):</label>
+                    <input type="number" id="amount" placeholder="Min 50 BDT" min="50" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="sender-number">Sender Number (যে নাম্বার থেকে পাঠিয়েছেন):</label>
+                    <input type="tel" id="sender-number" placeholder="Example: 01712345678" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="trxid">Transaction ID (TxID - ট্রানজেকশন আইডি):</label>
+                    <input type="text" id="trxid" placeholder="Example: K9B2J8X3PL" required>
+                </div>
+
+                <button type="submit" class="submit-btn">Submit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Script Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            authDomain: "igl-tournament-f788f.firebaseapp.com",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f",
+            storageBucket: "igl-tournament-f788f.firebasestorage.app",
+            messagingSenderId: "636254933423",
+            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
+            measurementId: "G-9EL1JQM2E4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        let currentUserId = null;
+        let currentUserEmail = null;
+
+        // Sync and monitor current user wallet balance
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                currentUserEmail = user.email;
+                onValue(ref(database, 'users/' + user.uid), (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        document.getElementById('deposit-page-balance').innerText = data.balance || 0;
+                    }
+                });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Handle Deposit Form Submission
+        document.getElementById('deposit-request-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const method = document.getElementById('payment-method').value;
+            const amount = parseInt(document.getElementById('amount').value);
+            const senderNumber = document.getElementById('sender-number').value.trim();
+            const transactionId = document.getElementById('trxid').value.trim();
+
+            if (!currentUserId) return;
+
+            // Target the 'deposit_requests' node inside Realtime Database
+            const depositRequestsRef = ref(database, 'deposit_requests');
+            const newRequestRef = push(depositRequestsRef); // Creates a unique ID automatically
+
+            // Set data to Firebase
+            set(newRequestRef, {
+                userId: currentUserId,
+                email: currentUserEmail,
+                method: method,
+                amount: amount,
+                sender: senderNumber,
+                trxid: transactionId,
+                status: "Pending", // Admin will change this to Approved
+                timestamp: new Date().toISOString()
+            })
+            .then(() => {
+                alert("Deposit request submitted successfully! Please wait 5 minutes for approval. (ডিপোজিট রিকোয়েস্ট সফলভাবে সাবমিট হয়েছে, দয়া করে ৫ মিনিট অপেক্ষা করুন।)");
+                document.getElementById('deposit-request-form').reset();
+            })
+            .catch((error) => {
+                alert("Submission failed: " + error.message);
+            });
+        });
+    </script>
+</body>
+</html>
