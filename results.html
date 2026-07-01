@@ -19,13 +19,43 @@
         .match-info { font-size: 13px; color: #aaa; margin-bottom: 12px; }
         .status-badge { display: inline-block; background: rgba(255, 204, 0, 0.2); color: #ffcc00; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
         
+        /* 🏆 Winners List Section Style */
+        .winners-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 15px;
+            border: 1px dashed rgba(0, 255, 204, 0.3);
+        }
+        .winners-box h4 {
+            font-size: 14px;
+            color: #ffcc00;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .winner-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .winner-row:last-child { border-bottom: none; }
+        .rank-1 { color: #ffcc00; font-weight: bold; } /* Gold */
+        .rank-2 { color: #dfdfdf; font-weight: bold; } /* Silver */
+        .rank-3 { color: #cd7f32; font-weight: bold; } /* Bronze */
+
         .no-data { text-align: center; color: #aaa; padding: 40px; font-size: 14px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>Match Results</h1>
+        <h1 style="position: relative;">
+            <a href="home.html" style="position: absolute; left: 0; top: 0; color: #00ffcc; text-decoration: none; font-size: 16px; text-transform: none;">← Home</a>
+            Match Results
+        </h1>
 
         <div class="filter-section">
             <select id="game-filter">
@@ -63,13 +93,12 @@
         const filterSelect = document.getElementById('game-filter');
         const resultsContainer = document.getElementById('results-container');
 
-        // রেজাল্ট ডাটাবেজ থেকে লোড করার ফাংশন
         function loadResults(gameKey) {
             resultsContainer.innerHTML = '<div class="no-data">Loading results...</div>';
             
             const resultsRef = ref(database, `results/${gameKey}`);
             onValue(resultsRef, (snapshot) => {
-                resultsContainer.innerHTML = ""; // ক্লিয়ার করা
+                resultsContainer.innerHTML = ""; 
 
                 if (snapshot.exists()) {
                     const data = snapshot.val();
@@ -78,11 +107,34 @@
                         
                         const card = document.createElement('div');
                         card.className = 'result-card';
+                        
+                        // উইনারদের নাম ডাটাবেজে না থাকলে ব্যাকআপ টেক্সট (TBD - To Be Declared)
+                        const w1 = match.winner1 || "Not Updated";
+                        const w2 = match.winner2 || "Not Updated";
+                        const w3 = match.winner3 || "Not Updated";
+
                         card.innerHTML = `
                             <div class="match-title">${match.title}</div>
                             <div class="match-info">Mode: ${match.mode} | Type: ${match.type}</div>
                             <div class="match-info">🗓️ Played on: ${match.time}</div>
-                            <div style="margin-top: 10px;">
+                            
+                            <div class="winners-box">
+                                <h4>🏆 Top Standings</h4>
+                                <div class="winner-row rank-1">
+                                    <span>🥇 1st Place (Winner):</span>
+                                    <span>${w1}</span>
+                                </div>
+                                <div class="winner-row rank-2">
+                                    <span>🥈 2nd Place:</span>
+                                    <span>${w2}</span>
+                                </div>
+                                <div class="winner-row rank-3">
+                                    <span>🥉 3rd Place:</span>
+                                    <span>${w3}</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 12px;">
                                 <span class="status-badge">Match Finished</span>
                             </div>
                         `;
@@ -94,10 +146,8 @@
             });
         }
 
-        // প্রথমবার পেজ লোড হলে Free Fire রেজাল্ট দেখাবে
         loadResults('freefire');
 
-        // ফিল্টার পরিবর্তন করলে সেই অনুযায়ী লোড হবে
         filterSelect.addEventListener('change', (e) => {
             loadResults(e.target.value);
         });
