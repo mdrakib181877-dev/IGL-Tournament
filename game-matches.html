@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tournaments - RB Tournament Zone</title>
+    <style>
+        /* Gamer Dark Theme Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #0f0c20;
+            color: #ffffff;
+            padding-bottom: 50px;
+        }
+        header {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-btn {
+            color: #00ffcc;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .game-title {
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 24px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* Match Category Tabs (CS, BR, Solo etc) */
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: #00ffcc;
+            color: #0f0c20;
+            border-color: #00ffcc;
+            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
+        }
+
+        /* Match Cards Styling */
+        .matches-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .match-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: 0.3s;
+        }
+        .match-card:hover {
+            border-color: #ff0055;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .match-details {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .match-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #15102a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .info h3 {
+            color: #fff;
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+        .info p {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+        .info .highlight {
+            color: #00ffcc;
+            font-weight: bold;
+        }
+        .match-action {
+            text-align: right;
+        }
+        .join-btn {
+            background: #ff0055;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+        }
+        .join-btn:hover {
+            background: #d00045;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+        }
+        .no-matches {
+            text-align: center;
+            color: #888;
+            padding: 40px;
+            font-size: 18px;
+        }
+
+        /* 🎁 PopUp Modal for Joining Match */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+        .modal-content {
+            background: #15102a;
+            border: 1px solid #00ffcc;
+            padding: 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+        .close-modal {
+            position: absolute;
+            top: 15px; right: 20px;
+            color: #aaa; font-size: 24px; cursor: pointer;
+        }
+        .close-modal:hover { color: #fff; }
+        .modal h3 { color: #00ffcc; margin-bottom: 20px; text-align: center; }
+        .modal label { display: block; margin-bottom: 8px; color: #aaa; font-size: 14px;}
+        .modal input {
+            width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px;
+            color: #fff; margin-bottom: 20px; font-size: 16px;
+        }
+        .modal input:focus { outline: none; border-color: #00ffcc; }
+        .confirm-btn {
+            width: 100%; padding: 12px; background: #00ffcc; color: #0f0c20;
+            border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px;
+        }
+        .confirm-btn:hover { background: #00ccaa; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <a href="home.html" class="back-btn">← Back to Home</a>
+        <div class="game-title" id="current-game-title">Loading Game...</div>
+        <div style="color: #00ffcc; font-weight: bold;">Balance: <span id="header-balance">0</span> BDT</div>
+    </header>
+
+    <div class="container">
+        <!-- Match Category Tabs -->
+        <div class="tabs-container" id="match-tabs">
+            <!-- Tabs will inject here dynamic based on game selection -->
+        </div>
+
+        <!-- Tournaments List -->
+        <h2 style="margin-bottom: 20px; font-size: 20px; border-left: 4px solid #ff0055; padding-left: 10px;">Available Matches</h2>
+        <div class="matches-list" id="matches-display">
+            <div class="no-matches">Fetching live tournaments...</div>
+        </div>
+    </div>
+
+    <!-- 🎁 JOIN MATCH MODAL WINDOW -->
+    <div class="modal" id="joinModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModalBtn">&times;</span>
+            <h3 id="modal-match-title">Join Tournament</h3>
+            <p style="text-align: center; margin-bottom: 15px; color: #ff0055; font-weight: bold;">Entry Fee: <span id="modal-entry-fee">0</span> BDT</p>
+            
+            <form id="join-match-form">
+                <label for="player-uid">In-Game Name / UID (আইডি বা নাম):</label>
+                <input type="text" id="player-uid" placeholder="Example: RB_Gamer99 or 5839201" required>
+                
+                <button type="submit" class="confirm-btn">Confirm & Join</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase Script Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, get, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            authDomain: "igl-tournament-f788f.firebaseapp.com",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f",
+            storageBucket: "igl-tournament-f788f.firebasestorage.app",
+            messagingSenderId: "636254933423",
+            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
+            measurementId: "G-9EL1JQM2E4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Get Selected Game from LocalStorage
+        const selectedGame = localStorage.getItem('selectedGame') || 'freefire';
+        
+        // Define Categories Map based on your requirements
+        const gameMetaData = {
+            freefire: { title: "Free Fire", modes: ["All", "CS Match", "BR Match", "Lone Wolf"] },
+            pubg: { title: "PUBG Mobile", modes: ["All", "Classic BR", "TDM Arena"] },
+            ludo: { title: "Ludo", modes: ["All", "Solo Match", "4-Player"] },
+            efootball: { title: "eFootball", modes: ["All", "Solo Match"] }
+        };
+
+        // Set Header Title
+        document.getElementById('current-game-title').innerText = gameMetaData[selectedGame].title;
+
+        let currentActiveMode = "All";
+        let userWalletBalance = 0;
+        let currentUserId = null;
+        let selectedMatchId = null;
+        let selectedMatchFee = 0;
+
+        // User authentication & Balance Sync
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                currentUserId = user.uid;
+                onValue(ref(database, 'users/' + user.uid), (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        userWalletBalance = data.balance || 0;
+                        document.getElementById('header-balance').innerText = userWalletBalance;
+                    }
+                });
+                loadTabs();
+                loadMatches();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        // 1. Generate Category Tabs Dynamic
+        function loadTabs() {
+            const tabsBox = document.getElementById('match-tabs');
+            tabsBox.innerHTML = "";
+            gameMetaData[selectedGame].modes.forEach(mode => {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn ${mode === currentActiveMode ? 'active' : ''}`;
+                btn.innerText = mode;
+                btn.onclick = () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentActiveMode = mode;
+                    loadMatches();
+                };
+                tabsBox.appendChild(btn);
+            });
+        }
+
+        // 2. Fetch & Render Matches from Firebase Realtime Database
+        function loadMatches() {
+            const displayZone = document.getElementById('matches-display');
+            displayZone.innerHTML = '<div class="no-matches">Searching for live tournaments...</div>';
+
+            const matchesRef = ref(database, 'matches/' + selectedGame);
+            onValue(matchesRef, (snapshot) => {
+                displayZone.innerHTML = "";
+                const data = snapshot.val();
+                
+                if (!data) {
+                    displayZone.innerHTML = '<div class="no-matches">No matches available right now!</div>';
+                    return;
+                }
+
+                let matchCount = 0;
+
+                for (let key in data) {
+                    const match = data[key];
+                    
+                    // Filter logic by sub-category
+                    if (currentActiveMode !== "All" && match.mode !== currentActiveMode) {
+                        continue;
+                    }
+
+                    matchCount++;
+
+                    const card = document.createElement('div');
+                    card.className = 'match-card';
+                    card.innerHTML = `
+                        <div class="match-details">
+                            <img class="match-logo" src="${match.logo || 'https://placehold.co/100x100?text=Match'}" alt="Logo">
+                            <div class="info">
+                                <h3>${match.title}</h3>
+                                <p>Type: <span class="highlight">${match.type} (${match.mode})</span></p>
+                                <p>Time: <span>${match.time}</span></p>
+                                <p>Prize Pool: <span class="highlight">${match.prize} BDT</span></p>
+                            </div>
+                        </div>
+                        <div class="match-action">
+                            <p style="margin-bottom:8px; font-weight:bold;">Fee: <span style="color:#00ffcc;">${match.entryFee} BDT</span></p>
+                            <button class="join-btn" onclick="openJoinModal('${key}', '${match.title}', ${match.entryFee})">Join</button>
+                        </div>
+                    `;
+                    displayZone.appendChild(card);
+                }
+
+                if (matchCount === 0) {
+                    displayZone.innerHTML = '<div class="no-matches">No active match found for this category.</div>';
+                }
+            });
+        }
+
+        // 3. Modal Popup Opening Logic
+        window.openJoinModal = function(matchId, matchTitle, entryFee) {
+            selectedMatchId = matchId;
+            selectedMatchFee = entryFee;
+            document.getElementById('modal-match-title').innerText = "Join: " + matchTitle;
+            document.getElementById('modal-entry-fee').innerText = entryFee;
+            document.getElementById('joinModal').style.display = 'flex';
+        };
+
+        // Close Modal
+        document.getElementById('closeModalBtn').onclick = () => {
+            document.getElementById('joinModal').style.display = 'none';
+        };
+
+        // 4. Handle Match Joining & Wallet Deduction System
+        document.getElementById('join-match-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const playerUID = document.getElementById('player-uid').value.trim();
+
+            if (userWalletBalance < selectedMatchFee) {
+                alert("Insufficient balance! Please deposit money first. (আপনার ব্যালেন্স পর্যাপ্ত নয়, দয়া করে ডিপোজিট করুন)");
+                window.location.href = 'deposit.html';
+                return;
+            }
+
+            try {
+                // Deduct balance from user profile
+                const newBalance = userWalletBalance - selectedMatchFee;
+                const userUpdate = {};
+                userUpdate[`users/${currentUserId}/balance`] = newBalance;
+                await update(ref(database), userUpdate);
+
+                // Add Player to Tournament Registration Node
+                const registrationRef = ref(database, `match_registrations/${selectedGame}/${selectedMatchId}`);
+                const newRegKey = push(registrationRef).key;
+                
+                const regData = {};
+                regData[`match_registrations/${selectedGame}/${selectedMatchId}/${newRegKey}`] = {
+                    userId: currentUserId,
+                    gameUid: playerUID,
+                    timestamp: new Date().toISOString()
+                };
+                await update(ref(database), regData);
+
+                alert("Successfully joined the tournament! Best of luck. (টুর্নামেন্টে জয়েনিং সফল হয়েছে!)");
+                document.getElementById('joinModal').style.display = 'none';
+                document.getElementById('player-uid').value = "";
+                
+            } catch (error) {
+                alert("Transaction failed: " + error.message);
+            }
+        });
+    </script>
+</body>
+</html>
