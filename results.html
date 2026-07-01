@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match Results - RB Tournament Zone</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0b0914; color: #fff; padding: 20px; min-height: 100vh; }
+        .container { max-width: 600px; margin: 0 auto; }
+        h1 { text-align: center; color: #ff0055; margin-bottom: 20px; font-size: 24px; text-transform: uppercase; }
+        
+        .filter-section { display: flex; gap: 10px; margin-bottom: 25px; }
+        select { flex: 1; padding: 12px; background: #120e24; border: 1px solid #ff0055; border-radius: 8px; color: #fff; font-size: 16px; outline: none; }
+        
+        .result-list { display: flex; flex-direction: column; gap: 15px; }
+        .result-card { background: #120e24; border: 1px solid rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 12px; border-left: 4px solid #ffcc00; }
+        .match-title { font-size: 18px; color: #00ffcc; font-weight: bold; margin-bottom: 5px; }
+        .match-info { font-size: 13px; color: #aaa; margin-bottom: 12px; }
+        .status-badge { display: inline-block; background: rgba(255, 204, 0, 0.2); color: #ffcc00; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; }
+        
+        .no-data { text-align: center; color: #aaa; padding: 40px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Match Results</h1>
+
+        <div class="filter-section">
+            <select id="game-filter">
+                <option value="freefire">Free Fire Results</option>
+                <option value="pubg">PUBG Mobile Results</option>
+                <option value="ludo">Ludo Results</option>
+                <option value="efootball">eFootball Results</option>
+            </select>
+        </div>
+
+        <div class="result-list" id="results-container">
+            <div class="no-data">Loading completed match results...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            authDomain: "igl-tournament-f788f.firebaseapp.com",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f",
+            storageBucket: "igl-tournament-f788f.firebasestorage.app",
+            messagingSenderId: "636254933423",
+            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
+            measurementId: "G-9EL1JQM2E4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const filterSelect = document.getElementById('game-filter');
+        const resultsContainer = document.getElementById('results-container');
+
+        // রেজাল্ট ডাটাবেজ থেকে লোড করার ফাংশন
+        function loadResults(gameKey) {
+            resultsContainer.innerHTML = '<div class="no-data">Loading results...</div>';
+            
+            const resultsRef = ref(database, `results/${gameKey}`);
+            onValue(resultsRef, (snapshot) => {
+                resultsContainer.innerHTML = ""; // ক্লিয়ার করা
+
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    for (let id in data) {
+                        const match = data[id];
+                        
+                        const card = document.createElement('div');
+                        card.className = 'result-card';
+                        card.innerHTML = `
+                            <div class="match-title">${match.title}</div>
+                            <div class="match-info">Mode: ${match.mode} | Type: ${match.type}</div>
+                            <div class="match-info">🗓️ Played on: ${match.time}</div>
+                            <div style="margin-top: 10px;">
+                                <span class="status-badge">Match Finished</span>
+                            </div>
+                        `;
+                        resultsContainer.appendChild(card);
+                    }
+                } else {
+                    resultsContainer.innerHTML = '<div class="no-data">No completed match results found for this game.</div>';
+                }
+            });
+        }
+
+        // প্রথমবার পেজ লোড হলে Free Fire রেজাল্ট দেখাবে
+        loadResults('freefire');
+
+        // ফিল্টার পরিবর্তন করলে সেই অনুযায়ী লোড হবে
+        filterSelect.addEventListener('change', (e) => {
+            loadResults(e.target.value);
+        });
+    </script>
+</body>
+</html>
