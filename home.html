@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - RB Tournament Zone</title>
+    <style>
+        /* Gamer Dark Theme Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: #0f0c20;
+            color: #ffffff;
+            padding-bottom: 30px;
+        }
+
+        /* 1. Scrolling Notice Bar */
+        .notice-container {
+            background: #ff0055;
+            color: #fff;
+            white-space: nowrap;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(255, 0, 85, 0.4);
+            padding: 10px 0;
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .notice-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
+        }
+
+        /* Header & Navbar */
+        header {
+            background: rgba(255, 255, 255, 0.03);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            color: #00ffcc;
+            font-size: 22px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .nav-buttons a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 15px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        .nav-buttons a:hover {
+            background: #ff0055;
+            border-color: #ff0055;
+        }
+
+        /* User Profile & Wallet Section */
+        .user-panel {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .welcome-msg h2 {
+            font-size: 20px;
+            color: #aaaaaa;
+        }
+        .welcome-msg span {
+            color: #00ffcc;
+            font-weight: bold;
+        }
+        .wallet-box {
+            text-align: right;
+        }
+        .balance {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00ffcc;
+            margin-bottom: 10px;
+        }
+        .deposit-btn {
+            background: #00ffcc;
+            color: #0f0c20;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+        }
+        .deposit-btn:hover {
+            background: #00ccaa;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
+        }
+
+        /* 2. Categories Grid */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .section-title {
+            font-size: 24px;
+            color: #fff;
+            margin-bottom: 20px;
+            border-left: 4px solid #00ffcc;
+            padding-left: 10px;
+            text-transform: uppercase;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+        .game-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: center;
+            transition: transform 0.3s, border-color 0.3s;
+            cursor: pointer;
+        }
+        .game-card:hover {
+            transform: translateY(-5px);
+            border-color: #00ffcc;
+        }
+        .game-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #1a1535; /* Fallback background */
+        }
+        .game-card h3 {
+            padding: 15px 0;
+            font-size: 18px;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Scrolling Notice Bar -->
+    <div class="notice-container">
+        <div class="notice-text" id="live-notice">স্বাগতম আরবি টুর্নামেন্ট জোনে! পেমেন্ট করার ৫ মিনিটের মধ্যে ব্যালেন্স অ্যাড হয়ে যাবে। যেকোনো সমস্যায় এডমিনের সাথে যোগাযোগ করুন।</div>
+    </div>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">RB Tournament Zone</div>
+        <div class="nav-buttons">
+            <a href="#" id="logout-btn">Log Out</a>
+        </div>
+    </header>
+
+    <!-- User Wallet Panel -->
+    <div class="user-panel">
+        <div class="welcome-msg">
+            <h2>Welcome Back, <span id="user-name">Gamer</span>!</h2>
+            <p style="color: #888; font-size: 14px; margin-top: 5px;">ID: <span id="user-id">Loading...</span></p>
+        </div>
+        <div class="wallet-box">
+            <div class="balance">Balance: <span id="user-balance">0</span> BDT</div>
+            <a href="deposit.html" class="deposit-btn">Deposit Money</a>
+        </div>
+    </div>
+
+    <!-- 2. Game Categories Section -->
+    <div class="main-container">
+        <h2 class="section-title">Select Game Category</h2>
+        
+        <div class="grid-container">
+            <!-- Free Fire -->
+            <div class="game-card" onclick="goToGame('freefire')">
+                <img id="img-freefire" src="https://placehold.co/400x250/1a1535/00ffcc?text=Free+Fire" alt="Free Fire">
+                <h3 id="title-freefire">Free Fire</h3>
+            </div>
+
+            <!-- PUBG Mobile -->
+            <div class="game-card" onclick="goToGame('pubg')">
+                <img id="img-pubg" src="https://placehold.co/400x250/1a1535/00ffcc?text=PUBG+Mobile" alt="PUBG">
+                <h3 id="title-pubg">PUBG Mobile</h3>
+            </div>
+
+            <!-- Ludo -->
+            <div class="game-card" onclick="goToGame('ludo')">
+                <img id="img-ludo" src="https://placehold.co/400x250/1a1535/00ffcc?text=Ludo" alt="Ludo">
+                <h3 id="title-ludo">Ludo</h3>
+            </div>
+
+            <!-- eFootball -->
+            <div class="game-card" onclick="goToGame('efootball')">
+                <img id="img-efootball" src="https://placehold.co/400x250/1a1535/00ffcc?text=eFootball" alt="eFootball">
+                <h3 id="title-efootball">eFootball</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase System Integration -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            authDomain: "igl-tournament-f788f.firebaseapp.com",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f",
+            storageBucket: "igl-tournament-f788f.firebasestorage.app",
+            messagingSenderId: "636254933423",
+            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
+            measurementId: "G-9EL1JQM2E4"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Security Check: Verify if User is Logged In
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // Fetch User Details from Realtime Database
+                const userRef = ref(database, 'users/' + user.uid);
+                onValue(userRef, (snapshot) => {
+                    const data = snapshot.val();
+                    if(data) {
+                        document.getElementById('user-name').innerText = data.username || data.fullName;
+                        document.getElementById('user-balance').innerText = data.balance;
+                        document.getElementById('user-id').innerText = user.uid.substring(0, 8) + '...';
+                    }
+                });
+            } else {
+                // If not logged in, kick out to Login Page
+                window.location.href = 'index.html';
+            }
+        });
+
+        // Dynamic Categories & Notice board data fetch from Admin settings
+        const settingsRef = ref(database, 'admin_settings/');
+        onValue(settingsRef, (snapshot) => {
+            const settings = snapshot.val();
+            if(settings) {
+                // Live Notice Update
+                if(settings.notice) {
+                    document.getElementById('live-notice').innerText = settings.notice;
+                }
+                // Live Category Images from Admin Links
+                if(settings.categories) {
+                    const cats = settings.categories;
+                    if(cats.freefire) {
+                        document.getElementById('img-freefire').src = cats.freefire.image || document.getElementById('img-freefire').src;
+                        document.getElementById('title-freefire').innerText = cats.freefire.title || "Free Fire";
+                    }
+                    if(cats.pubg) {
+                        document.getElementById('img-pubg').src = cats.pubg.image || document.getElementById('img-pubg').src;
+                        document.getElementById('title-pubg').innerText = cats.pubg.title || "PUBG Mobile";
+                    }
+                    if(cats.ludo) {
+                        document.getElementById('img-ludo').src = cats.ludo.image || document.getElementById('img-ludo').src;
+                        document.getElementById('title-ludo').innerText = cats.ludo.title || "Ludo";
+                    }
+                    if(cats.efootball) {
+                        document.getElementById('img-efootball').src = cats.efootball.image || document.getElementById('img-efootball').src;
+                        document.getElementById('title-efootball').innerText = cats.efootball.title || "eFootball";
+                    }
+                }
+            }
+        });
+
+        // Logout Event
+        document.getElementById('logout-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                window.location.href = 'index.html';
+            });
+        });
+    </script>
+
+    <script>
+        // Navigation Function to Game Match Page
+        function goToGame(gameName) {
+            // It will save selected game name in local storage and move to matches page
+            localStorage.setItem('selectedGame', gameName);
+            window.location.href = 'game-matches.html';
+        }
+    </script>
+</body>
+  </html>
