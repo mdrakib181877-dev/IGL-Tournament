@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Requests - RB Admin</title>
+    <style>
+        /* Modern Cyberpunk Admin Theme */
+        * {
+            margin: 0; padding: 0; box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body { background: #0b0914; color: #ffffff; display: flex; min-height: 100vh; }
+        
+        /* Sidebar Styling */
+        .sidebar {
+            width: 260px; background: #120e24; padding: 30px 20px;
+            border-right: 1px solid rgba(255, 0, 85, 0.2); display: flex; flex-direction: column; justify-content: space-between;
+        }
+        .sidebar h2 { color: #ff0055; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 40px; text-align: center; }
+        .sidebar menu a {
+            display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; transition: 0.3s;
+        }
+        .sidebar menu a.active, .sidebar menu a:hover { background: rgba(255, 0, 85, 0.1); color: #ff0055; border-left: 4px solid #ff0055; }
+        .logout-btn { background: #ff0055; color: #fff; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; }
+        
+        /* Main Content Panel */
+        .main-content { flex: 1; padding: 40px; overflow-y: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; margin-bottom: 30px; }
+        .header h1 { font-size: 26px; color: #ff0055; }
+
+        /* Request Table Styling */
+        .table-container {
+            background: #120e24;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px;
+            overflow-x: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        .table-container h3 {
+            color: #00ffcc; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;
+        }
+        table {
+            width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;
+        }
+        th, td {
+            padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        th {
+            color: #ff0055; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;
+        }
+        tr:hover { background: rgba(255,255,255,0.02); }
+        
+        /* Status Badges & Buttons */
+        .badge {
+            padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase;
+        }
+        .badge.pending { background: rgba(255, 165, 0, 0.15); color: #ffa500; border: 1px solid #ffa500; }
+        .badge.approved { background: rgba(0, 255, 204, 0.15); color: #00ffcc; border: 1px solid #00ffcc; }
+        
+        .approve-btn {
+            background: #00ffcc; color: #0b0914; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 12px;
+        }
+        .approve-btn:hover { background: #00ccaa; box-shadow: 0 0 10px rgba(0,255,204,0.4); }
+        .approve-btn:disabled { background: #333; color: #777; cursor: not-allowed; box-shadow: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div>
+            <h2>RB Admin Panel</h2>
+            <menu style="margin-top: 20px;">
+                <a href="admin-dashboard.html">Tournament & Config</a>
+                <a href="admin-requests.html" class="active">Deposit & Users Requests</a>
+            </menu>
+        </div>
+        <a href="#" class="logout-btn" id="admin-logout">Secure Log Out</a>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Deposit Requests Management</h1>
+            <div style="color: #00ffcc; font-weight: bold;">Realtime Synchronized</div>
+        </div>
+
+        <!-- Request List Table -->
+        <div class="table-container">
+            <h3>Incoming Manual Deposits</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User Email</th>
+                        <th>Method</th>
+                        <th>Amount (BDT)</th>
+                        <th>Sender Number</th>
+                        <th>Transaction ID (TxID)</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="deposit-requests-table">
+                    <!-- Dynamic Data Loading via Firebase Modules -->
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #aaa; padding: 30px;">Loading requests...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Systems Connection -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, update, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            authDomain: "igl-tournament-f788f.firebaseapp.com",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f",
+            storageBucket: "igl-tournament-f788f.firebasestorage.app",
+            messagingSenderId: "636254933423",
+            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
+            measurementId: "G-9EL1JQM2E4"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        // Simple Session Gateway Security Guard
+        if(localStorage.getItem('rbAdminSession') !== 'active') {
+            window.location.href = 'admin-login.html';
+        }
+
+        // Fetch and Display Deposit Requests in Realtime
+        const requestsTableBody = document.getElementById('deposit-requests-table');
+        const depositRequestsRef = ref(database, 'deposit_requests');
+
+        onValue(depositRequestsRef, (snapshot) => {
+            const data = snapshot.val();
+            requestsTableBody.innerHTML = ''; // Clear previous items
+
+            if (!data) {
+                requestsTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #aaa; padding: 30px;">No deposit requests found.</td></tr>`;
+                return;
+            }
+
+            // Loop through all incoming database request nodes
+            Object.keys(data).forEach((key) => {
+                const request = data[key];
+                const tr = document.createElement('tr');
+
+                const statusClass = request.status.toLowerCase();
+                const isApproved = request.status === "Approved";
+
+                tr.innerHTML = `
+                    <td>${request.email}</td>
+                    <td><span style="font-weight: bold; color: ${request.method === 'Bkash' ? '#e2136e' : request.method === 'Nagad' ? '#ff6000' : '#8c3494'}">${request.method}</span></td>
+                    <td style="font-weight: bold; color: #00ffcc;">${request.amount} BDT</td>
+                    <td>${request.sender}</td>
+                    <td style="font-family: monospace; letter-spacing: 0.5px;">${request.trxid}</td>
+                    <td><span class="badge ${statusClass}">${request.status}</span></td>
+                    <td>
+                        <button class="approve-btn" data-id="${key}" data-user="${request.userId}" data-amount="${request.amount}" ${isApproved ? 'disabled' : ''}>
+                            ${isApproved ? 'Approved ✓' : 'Approve'}
+                        </button>
+                    </td>
+                `;
+                requestsTableBody.appendChild(tr);
+            });
+
+            // Bind Event Listeners to all newly generated Approve Buttons
+            const approveButtons = document.querySelectorAll('.approve-btn');
+            approveButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const requestId = this.getAttribute('data-id');
+                    const targetUserId = this.getAttribute('data-user');
+                    const depositAmount = parseInt(this.getAttribute('data-amount'));
+
+                    approveUserDeposit(requestId, targetUserId, depositAmount);
+                });
+            });
+        });
+
+        // Safe Transactional Balance Injection Routine
+        function approveUserDeposit(requestId, userId, amount) {
+            if(!confirm(`Are you sure you want to approve this request and add ${amount} BDT to this user's account?`)) return;
+
+            const userBalanceRef = ref(database, `users/${userId}/balance`);
+
+            // Use atomical transaction operation to safely update balance without risking collisions
+            runTransaction(userBalanceRef, (currentBalance) => {
+                // If path doesn't exist, start ledger at 0
+                return (currentBalance || 0) + amount;
+            })
+            .then(() => {
+                // Once the money safely lands in the user profile ledger, change request node status to Approved
+                update(ref(database, `deposit_requests/${requestId}`), {
+                    status: "Approved"
+                }).then(() => {
+                    alert("Deposit Approved! Balance successfully synchronized and added to user account.");
+                });
+            })
+            .catch((error) => {
+                alert("Transaction processing crashed: " + error.message);
+            });
+        }
+
+        // Admin Security Log Out Procedure
+        document.getElementById('admin-logout').addEventListener('click', (e) => {
+            e.preventDefault();
+            signOut(auth).then(() => {
+                localStorage.removeItem('rbAdminSession');
+                window.location.href = 'admin-login.html';
+            });
+        });
+    </script>
+</body>
+</html>
