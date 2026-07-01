@@ -110,7 +110,6 @@
     <div class="container">
         <h1>RB Tournament Zone</h1>
         
-        <!-- LOGIN FORM -->
         <div id="login-box">
             <h3>Login to Play</h3>
             <form id="login-form">
@@ -127,7 +126,6 @@
             <p>Don't have an account? <a href="#" id="go-to-signup">Create Account</a></p>
         </div>
 
-        <!-- SIGN UP FORM -->
         <div id="signup-box" class="hidden">
             <h3>Create Gamer Profile</h3>
             <form id="signup-form">
@@ -153,7 +151,6 @@
         </div>
     </div>
 
-    <!-- Firebase SDK Modules -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -208,7 +205,8 @@
                         fullName: name,
                         username: username,
                         email: email,
-                        balance: 0 // New users start with 0 BDT
+                        balance: 0, // New users start with 0 BDT
+                        total_joined_matches: 0 // ট্র্যাকিং এর সুবিধার্থে নতুন ফিল্ড যুক্ত করা হলো
                     }).then(() => {
                         alert('Registration Successful! Welcome to the Zone.');
                         window.location.href = 'home.html';
