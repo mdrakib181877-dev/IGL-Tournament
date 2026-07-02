@@ -19,25 +19,23 @@
         .nav-buttons { display: flex; flex-direction: column; width: 100%; max-width: 300px; gap: 10px; }
         .nav-buttons a { color: #fff; text-decoration: none; font-size: 14px; border: 1px solid rgba(255, 255, 255, 0.3); padding: 10px; border-radius: 5px; transition: 0.3s; font-weight: bold; text-align: center; display: block; }
         .nav-buttons a.rules-nav { border-color: #00ffcc; color: #00ffcc; }
-        .nav-buttons a.rules-nav:hover { background: #00ffcc; color: #0f0c20; }
         .nav-buttons a.results-nav { border-color: #ffcc00; color: #ffcc00; }
         .nav-buttons a.results-nav:hover { background: #ffcc00; color: #0f0c20; }
+        .nav-buttons a.rules-nav:hover { background: #00ffcc; color: #0f0c20; }
         .nav-buttons a.logout-nav:hover { background: #ff0055; border-color: #ff0055; }
 
         /* User Panel */
         .user-panel { max-width: 1200px; margin: 30px auto; padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); }
         .wallet-box { text-align: right; }
         .balance { font-size: 20px; font-weight: bold; color: #00ffcc; margin-bottom: 10px; }
-        .deposit-btn, .withdraw-btn { padding: 8px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; }
-        .deposit-btn { background: #00ffcc; color: #0f0c20; }
-        .withdraw-btn { background: #ff0055; color: #fff; margin-right: 5px; }
+        .deposit-btn { background: #00ffcc; color: #0f0c20; padding: 8px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .withdraw-btn { background: #ff0055; color: #fff; padding: 8px 15px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; margin-right: 5px; }
 
-        /* Categories Grid */
+        /* Grid */
         .main-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         .section-title { font-size: 24px; color: #fff; margin-bottom: 20px; border-left: 4px solid #00ffcc; padding-left: 10px; text-transform: uppercase; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
         .game-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; text-align: center; cursor: pointer; transition: 0.3s; }
-        .game-card:hover { border-color: #00ffcc; }
         .game-card img { width: 100%; height: 180px; object-fit: cover; background: #1a1535; display: block; }
         .game-card h3 { padding: 15px 0; color: #fff; background: rgba(0,0,0,0.4); }
 
@@ -75,19 +73,19 @@
         <h2 class="section-title">Select Game Category</h2>
         <div class="grid-container">
             <div class="game-card" onclick="goToGame('freefire')">
-                <img id="img-freefire" src="https://placehold.co/400x250/1a1535/00ffcc?text=Loading..." alt="FF">
+                <img id="img-freefire" src="" alt="FF">
                 <h3 id="title-freefire">Free Fire</h3>
             </div>
             <div class="game-card" onclick="goToGame('pubg')">
-                <img id="img-pubg" src="https://placehold.co/400x250/1a1535/00ffcc?text=Loading..." alt="PUBG">
+                <img id="img-pubg" src="" alt="PUBG">
                 <h3 id="title-pubg">PUBG Mobile</h3>
             </div>
             <div class="game-card" onclick="goToGame('ludo')">
-                <img id="img-ludo" src="https://placehold.co/400x250/1a1535/00ffcc?text=Loading..." alt="Ludo">
+                <img id="img-ludo" src="" alt="Ludo">
                 <h3 id="title-ludo">Ludo</h3>
             </div>
             <div class="game-card" onclick="goToGame('efootball')">
-                <img id="img-efootball" src="https://placehold.co/400x250/1a1535/00ffcc?text=Loading..." alt="eFootball">
+                <img id="img-efootball" src="" alt="eFootball">
                 <h3 id="title-efootball">eFootball</h3>
             </div>
         </div>
@@ -102,12 +100,13 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = { /* আপনার কনফিগ এখানে বসান */ };
+        const firebaseConfig = { 
+            /* আপনার কনফিগ এখানে বসান */ 
+        };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // ইউজার ডাটা
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 onValue(ref(database, 'users/' + user.uid), (snapshot) => {
@@ -120,18 +119,16 @@
             } else { window.location.href = 'index.html'; }
         });
 
-        // ইমপ্রুভড ইমেজ লোডার
         function updateCategory(id, data) {
             const img = document.getElementById(`img-${id}`);
             const title = document.getElementById(`title-${id}`);
             if(data.image) {
-                img.src = data.image;
-                img.onerror = function() { this.src = "https://placehold.co/400x250/1a1535/00ffcc?text=Link+Error"; };
+                img.src = data.image + "?t=" + new Date().getTime();
+                img.onerror = function() { this.src = "https://placehold.co/400x250/1a1535/00ffcc?text=No+Image"; };
             }
             if(data.title) title.innerText = data.title;
         }
 
-        // সেটিংস লোড
         onValue(ref(database, 'admin_settings/'), (snapshot) => {
             const settings = snapshot.val();
             if(!settings) return;
