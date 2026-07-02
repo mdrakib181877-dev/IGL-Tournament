@@ -8,35 +8,39 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0f0c20; color: #ffffff; padding-bottom: 30px; }
 
-        /* Notice Bar */
+        /* Scrolling Notice Bar */
         .notice-container { background: #ff0055; color: #fff; white-space: nowrap; overflow: hidden; box-shadow: 0 2px 10px rgba(255, 0, 85, 0.4); padding: 10px 0; font-weight: bold; font-size: 15px; }
         .notice-text { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* Header */
-        header { background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        /* Header & Navbar (Updated for stacking) */
+        header { background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 15px; }
         .logo { color: #00ffcc; font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        .nav-buttons a { color: #fff; text-decoration: none; margin-left: 10px; font-size: 14px; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 15px; border-radius: 5px; transition: 0.3s; font-weight: bold; }
-        .nav-buttons a.results-nav { border-color: #ffcc00; color: #ffcc00; }
-        .nav-buttons a.results-nav:hover { background: #ffcc00; color: #0f0c20; }
+        
+        .nav-buttons { display: flex; flex-direction: column; width: 100%; max-width: 300px; gap: 10px; }
+        .nav-buttons a { color: #fff; text-decoration: none; font-size: 14px; border: 1px solid rgba(255, 255, 255, 0.3); padding: 10px; border-radius: 5px; transition: 0.3s; font-weight: bold; text-align: center; display: block; }
+        
         .nav-buttons a.rules-nav { border-color: #00ffcc; color: #00ffcc; }
         .nav-buttons a.rules-nav:hover { background: #00ffcc; color: #0f0c20; }
+        .nav-buttons a.results-nav { border-color: #ffcc00; color: #ffcc00; }
+        .nav-buttons a.results-nav:hover { background: #ffcc00; color: #0f0c20; }
         .nav-buttons a.logout-nav:hover { background: #ff0055; border-color: #ff0055; }
 
-        /* User Panel */
+        /* User Profile & Wallet */
         .user-panel { max-width: 1200px; margin: 30px auto; padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .wallet-box { text-align: right; }
         .balance { font-size: 24px; font-weight: bold; color: #00ffcc; margin-bottom: 10px; }
-        .deposit-btn { background: #00ffcc; color: #0f0c20; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; }
-        .withdraw-btn { background: #ff0055; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; margin-right: 10px; }
+        .deposit-btn { background: #00ffcc; color: #0f0c20; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.3s; }
+        .withdraw-btn { background: #ff0055; color: #fff; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; display: inline-block; transition: 0.3s; margin-right: 10px; }
 
-        /* Grid */
+        /* Categories */
         .main-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
         .section-title { font-size: 24px; color: #fff; margin-bottom: 20px; border-left: 4px solid #00ffcc; padding-left: 10px; text-transform: uppercase; }
         .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
-        .game-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; text-align: center; cursor: pointer; transition: 0.3s; }
-        .game-card:hover { transform: translateY(-5px); border-color: #00ffcc; }
-        .game-card img { width: 100%; height: 180px; object-fit: cover; background: #1a1535; }
-        .game-card h3 { padding: 15px 0; font-size: 18px; color: #fff; background: rgba(0,0,0,0.4); }
+        .game-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; text-align: center; cursor: pointer; }
+        .game-card img { width: 100%; height: 180px; object-fit: cover; }
+        .game-card h3 { padding: 15px 0; color: #fff; background: rgba(0,0,0,0.4); }
+
         .support-wrapper { max-width: 1200px; margin: 40px auto; padding: 0 20px; text-align: center; }
         .support-btn { display: inline-block; width: 100%; max-width: 450px; padding: 14px; border: 1px solid #00ffcc; color: #00ffcc; text-decoration: none; font-weight: bold; border-radius: 8px; }
     </style>
@@ -44,7 +48,7 @@
 <body>
 
     <div class="notice-container">
-        <div class="notice-text" id="live-notice">Loading notice...</div>
+        <div class="notice-text" id="live-notice">স্বাগতম IGL টুর্নামেন্ট জোনে!</div>
     </div>
 
     <header>
@@ -57,8 +61,9 @@
     </header>
 
     <div class="user-panel">
-        <div>
+        <div class="welcome-msg">
             <h2>Welcome Back, <span id="user-name">Gamer</span>!</h2>
+            <p style="color: #888; font-size: 14px; margin-top: 5px;">ID: <span id="user-id">Loading...</span></p>
         </div>
         <div class="wallet-box">
             <div class="balance">Balance: <span id="user-balance">0</span> BDT</div>
@@ -71,19 +76,19 @@
         <h2 class="section-title">Select Game Category</h2>
         <div class="grid-container">
             <div class="game-card" onclick="goToGame('freefire')">
-                <img id="img-freefire" src="" alt="FF">
+                <img id="img-freefire" src="https://placehold.co/400x250/1a1535/00ffcc?text=Free+Fire" alt="Free Fire">
                 <h3 id="title-freefire">Free Fire</h3>
             </div>
             <div class="game-card" onclick="goToGame('pubg')">
-                <img id="img-pubg" src="" alt="PUBG">
+                <img id="img-pubg" src="https://placehold.co/400x250/1a1535/00ffcc?text=PUBG+Mobile" alt="PUBG">
                 <h3 id="title-pubg">PUBG Mobile</h3>
             </div>
             <div class="game-card" onclick="goToGame('ludo')">
-                <img id="img-ludo" src="" alt="Ludo">
+                <img id="img-ludo" src="https://placehold.co/400x250/1a1535/00ffcc?text=Ludo" alt="Ludo">
                 <h3 id="title-ludo">Ludo</h3>
             </div>
             <div class="game-card" onclick="goToGame('efootball')">
-                <img id="img-efootball" src="" alt="eFootball">
+                <img id="img-efootball" src="https://placehold.co/400x250/1a1535/00ffcc?text=eFootball" alt="eFootball">
                 <h3 id="title-efootball">eFootball</h3>
             </div>
         </div>
@@ -98,22 +103,12 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
-            authDomain: "igl-tournament-f788f.firebaseapp.com",
-            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
-            projectId: "igl-tournament-f788f",
-            storageBucket: "igl-tournament-f788f.firebasestorage.app",
-            messagingSenderId: "636254933423",
-            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
-            measurementId: "G-9EL1JQM2E4"
-        };
-
+        // আপনার Firebase কনফিগারেশন এখানে আগের মতোই থাকবে
+        const firebaseConfig = { /* ... */ };
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // ইউজার ডাটা লোড
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 onValue(ref(database, 'users/' + user.uid), (snapshot) => {
@@ -121,38 +116,14 @@
                     if(data) {
                         document.getElementById('user-name').innerText = data.username || "Gamer";
                         document.getElementById('user-balance').innerText = data.balance || 0;
+                        document.getElementById('user-id').innerText = user.uid.substring(0, 8) + '...';
                     }
                 });
             } else { window.location.href = 'index.html'; }
         });
 
-        // ইমপ্রুভড ইমেজ লোডার
-        function updateCategory(id, data) {
-            const img = document.getElementById(`img-${id}`);
-            const title = document.getElementById(`title-${id}`);
-            if(data.image) {
-                img.src = data.image;
-                img.onerror = () => { img.src = "https://placehold.co/400x250/1a1535/00ffcc?text=Image+Error"; };
-            }
-            if(data.title) title.innerText = data.title;
-        }
-
-        // সেটিংস লোড
-        onValue(ref(database, 'admin_settings/'), (snapshot) => {
-            const settings = snapshot.val();
-            if(!settings) return;
-            if(settings.notice) document.getElementById('live-notice').innerText = settings.notice;
-            if(settings.categories) {
-                if(settings.categories.freefire) updateCategory('freefire', settings.categories.freefire);
-                if(settings.categories.pubg) updateCategory('pubg', settings.categories.pubg);
-                if(settings.categories.ludo) updateCategory('ludo', settings.categories.ludo);
-                if(settings.categories.efootball) updateCategory('efootball', settings.categories.efootball);
-            }
-        });
-
         document.getElementById('logout-btn').onclick = (e) => { e.preventDefault(); signOut(auth).then(() => window.location.href = 'index.html'); };
     </script>
-
     <script>
         function goToGame(gameName) { localStorage.setItem('selectedGame', gameName); window.location.href = 'game-matches.html'; }
     </script>
