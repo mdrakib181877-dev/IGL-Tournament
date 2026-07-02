@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdraw Money - IGL Tournament</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background: #0f0c20; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .card { background: #1a1535; padding: 30px; border-radius: 15px; width: 100%; max-width: 400px; border: 1px solid #00ffcc; }
+        h2 { color: #00ffcc; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; }
+        input, select { width: 100%; padding: 12px; background: #0f0c20; border: 1px solid #444; border-radius: 6px; color: #fff; }
+        button { width: 100%; padding: 12px; background: #00ffcc; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 10px; }
+        .back-link { display: block; text-align: center; margin-top: 15px; color: #aaa; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Withdraw Money</h2>
+        <p style="text-align: center; margin-bottom: 20px;">Available: <span id="user-balance" style="color:#00ffcc; font-weight:bold;">0</span> BDT</p>
+        
+        <form id="withdraw-form">
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select id="method" required>
+                    <option value="Bkash">Bkash</option>
+                    <option value="Nagad">Nagad</option>
+                    <option value="Rocket">Rocket</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Account Number</label>
+                <input type="text" id="account" placeholder="Enter your number" required>
+            </div>
+            <div class="form-group">
+                <label>Amount (BDT)</label>
+                <input type="number" id="amount" placeholder="Enter amount" required>
+            </div>
+            <button type="submit">Submit Request</button>
+        </form>
+        <a href="home.html" class="back-link">Back to Home</a>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(auth);
+        const database = getDatabase(app);
+        let currentUser;
+        let currentBalance = 0;
+
+        onAuthStateChanged(auth, (user) => {
+            if(user) {
+                currentUser = user;
+                onValue(ref(database, `users/${user.uid}/balance`), (snap) => {
+                    currentBalance = snap.val() || 0;
+                    document.getElementById('user-balance').innerText = currentBalance;
+                });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        document.getElementById('withdraw-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const amount = parseInt(document.getElementById('amount').value);
+            
+            if(amount > currentBalance) {
+                alert("Insufficient balance!");
+                return;
+            }
+
+            push(ref(database, 'withdraw_requests'), {
+                userId: currentUser.uid,
+                email: currentUser.email,
+                method: document.getElementById('method').value,
+                accountNumber: document.getElementById('account').value,
+                amount: amount,
+                status: 'Pending'
+            }).then(() => {
+                alert("Withdraw request submitted!");
+                window.location.href = 'home.html';
+            });
+        });
+    </script>
+</body>
+</html>
