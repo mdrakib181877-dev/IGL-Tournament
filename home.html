@@ -5,371 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - IGL Tournament Zone</title>
     <style>
-        /* Gamer Dark Theme Styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background: #0f0c20;
-            color: #ffffff;
-            padding-bottom: 30px;
-        }
-
-        /* 1. Scrolling Notice Bar */
-        .notice-container {
-            background: #ff0055;
-            color: #fff;
-            white-space: nowrap;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(255, 0, 85, 0.4);
-            padding: 10px 0;
-            font-weight: bold;
-            font-size: 15px;
-        }
-        .notice-text {
-            display: inline-block;
-            padding-left: 100%;
-            animation: marquee 20s linear infinite;
-        }
-        @keyframes marquee {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
-        }
-
-        /* Header & Navbar */
-        header {
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .logo {
-            color: #00ffcc;
-            font-size: 22px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .nav-buttons a {
-            color: #fff;
-            text-decoration: none;
-            margin-left: 10px;
-            font-size: 14px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 15px;
-            border-radius: 5px;
-            transition: 0.3s;
-            font-weight: bold;
-        }
-        .nav-buttons a.results-nav {
-            border-color: #ffcc00;
-            color: #ffcc00;
-        }
-        .nav-buttons a.results-nav:hover {
-            background: #ffcc00;
-            color: #0f0c20;
-        }
-        .nav-buttons a.logout-nav:hover {
-            background: #ff0055;
-            border-color: #ff0055;
-        }
-
-        /* User Profile & Wallet Section */
-        .user-panel {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .welcome-msg h2 {
-            font-size: 20px;
-            color: #aaaaaa;
-        }
-        .welcome-msg span {
-            color: #00ffcc;
-            font-weight: bold;
-        }
-        .wallet-box {
-            text-align: right;
-        }
-        .balance {
-            font-size: 24px;
-            font-weight: bold;
-            color: #00ffcc;
-            margin-bottom: 10px;
-        }
-        .deposit-btn {
-            background: #00ffcc;
-            color: #0f0c20;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-weight: bold;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-            transition: 0.3s;
-        }
-        .deposit-btn:hover {
-            background: #00ccaa;
-            box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
-        }
-
-        /* 2. Categories Grid */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-        .section-title {
-            font-size: 24px;
-            color: #fff;
-            margin-bottom: 20px;
-            border-left: 4px solid #00ffcc;
-            padding-left: 10px;
-            text-transform: uppercase;
-        }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-        }
-        .game-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            overflow: hidden;
-            text-align: center;
-            transition: transform 0.3s, border-color 0.3s;
-            cursor: pointer;
-        }
-        .game-card:hover {
-            transform: translateY(-5px);
-            border-color: #00ffcc;
-        }
-        .game-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            background: #1a1535;
-        }
-        .game-card h3 {
-            padding: 15px 0;
-            font-size: 18px;
-            letter-spacing: 1px;
-            background: rgba(0, 0, 0, 0.4);
-            color: #fff;
-        }
-
-        /* 3. Modern Support Button Section */
-        .support-wrapper {
-            max-width: 1200px;
-            margin: 40px auto 10px auto;
-            padding: 0 20px;
-            text-align: center;
-        }
-        .support-btn {
-            display: inline-block;
-            width: 100%;
-            max-width: 450px;
-            padding: 14px;
-            background: rgba(0, 255, 204, 0.05);
-            border: 1px solid #00ffcc;
-            color: #00ffcc;
-            text-align: center;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.1);
-        }
-        .support-btn:hover {
-            background: #00ffcc;
-            color: #0f0c20;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0f0c20; color: #ffffff; padding-bottom: 30px; }
+        .notice-container { background: #ff0055; color: #fff; white-space: nowrap; overflow: hidden; box-shadow: 0 2px 10px rgba(255, 0, 85, 0.4); padding: 10px 0; font-weight: bold; font-size: 15px; }
+        .notice-text { display: inline-block; padding-left: 100%; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
+        header { background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .logo { color: #00ffcc; font-size: 22px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
+        .nav-buttons a { color: #fff; text-decoration: none; margin-left: 10px; font-size: 14px; border: 1px solid rgba(255, 255, 255, 0.3); padding: 8px 15px; border-radius: 5px; transition: 0.3s; font-weight: bold; }
+        .nav-buttons a.results-nav { border-color: #ffcc00; color: #ffcc00; }
+        .nav-buttons a.logout-nav:hover { background: #ff0055; border-color: #ff0055; }
+        .user-panel { max-width: 1200px; margin: 30px auto; padding: 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .balance { font-size: 24px; font-weight: bold; color: #00ffcc; margin-bottom: 10px; }
+        .deposit-btn { background: #00ffcc; color: #0f0c20; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; text-decoration: none; transition: 0.3s; }
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .section-title { font-size: 24px; color: #fff; margin-bottom: 20px; border-left: 4px solid #00ffcc; padding-left: 10px; text-transform: uppercase; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .game-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; text-align: center; cursor: pointer; transition: 0.3s; }
+        .game-card:hover { transform: translateY(-5px); border-color: #00ffcc; }
+        .game-card img { width: 100%; height: 180px; object-fit: cover; background: #1a1535; }
+        .support-wrapper { max-width: 1200px; margin: 40px auto 10px auto; padding: 0 20px; text-align: center; }
+        .support-btn { display: inline-block; width: 100%; max-width: 450px; padding: 14px; border: 1px solid #00ffcc; color: #00ffcc; text-decoration: none; font-weight: bold; border-radius: 8px; transition: 0.3s; }
+        .support-btn:hover { background: #00ffcc; color: #0f0c20; }
     </style>
 </head>
 <body>
-
-    <div class="notice-container">
-        <div class="notice-text" id="live-notice">স্বাগতম IGL টুর্নামেন্ট জোনে! পেমেন্ট করার ৫ মিনিটের মধ্যে ব্যালেন্স অ্যাড হয়ে যাবে। যেকোনো সমস্যায় এডমিনের সাথে যোগাযোগ করুন।</div>
-    </div>
-
+    <div class="notice-container"><div class="notice-text" id="live-notice">Welcome to IGL Tournament Zone!</div></div>
     <header>
         <div class="logo">IGL Tournament Zone</div>
         <div class="nav-buttons" style="display: flex; flex-direction: column; gap: 8px; width: 150px;">
-            <a href="results.html" class="results-nav" style="margin-left: 0; text-align: center;">Match Results 🏆</a>
-            <a href="rules.html" style="margin-left: 0; text-align: center;">Rules 📜</a>
-            <a href="withdraw.html" style="margin-left: 0; text-align: center; border-color: #ff0055; color: #ff0055;">Withdraw 💰</a>
-            <a href="#" id="logout-btn" class="logout-nav" style="margin-left: 0; text-align: center;">Log Out</a>
+            <a href="results.html" class="results-nav" style="text-align: center;">Match Results 🏆</a>
+            <a href="rules.html" style="text-align: center;">Rules 📜</a>
+            <a href="withdraw.html" style="text-align: center; border-color: #ff0055; color: #ff0055;">Withdraw 💰</a>
+            <a href="#" id="logout-btn" class="logout-nav" style="text-align: center;">Log Out</a>
         </div>
     </header>
-
     <div class="user-panel">
         <div class="welcome-msg">
             <h2>Welcome Back, <span id="user-name">Gamer</span>!</h2>
             <p style="color: #888; font-size: 14px; margin-top: 5px;">ID: <span id="user-id">Loading...</span></p>
         </div>
-        <div class="wallet-box">
+        <div class="wallet-box" style="text-align: right;">
             <div class="balance">Balance: <span id="user-balance">0</span> BDT</div>
             <a href="deposit.html" class="deposit-btn">Deposit Money</a>
         </div>
     </div>
-
     <div class="main-container">
         <h2 class="section-title">Select Game Category</h2>
-        
         <div class="grid-container">
-            <div class="game-card" onclick="goToGame('freefire')">
-                <img id="img-freefire" src="https://placehold.co/400x250/1a1535/00ffcc?text=Free+Fire" alt="Free Fire">
-                <h3 id="title-freefire">Free Fire</h3>
-            </div>
-
-            <div class="game-card" onclick="goToGame('pubg')">
-                <img id="img-pubg" src="https://placehold.co/400x250/1a1535/00ffcc?text=PUBG+Mobile" alt="PUBG">
-                <h3 id="title-pubg">PUBG Mobile</h3>
-            </div>
-
-            <div class="game-card" onclick="goToGame('ludo')">
-                <img id="img-ludo" src="https://placehold.co/400x250/1a1535/00ffcc?text=Ludo" alt="Ludo">
-                <h3 id="title-ludo">Ludo</h3>
-            </div>
-
-            <div class="game-card" onclick="goToGame('efootball')">
-                <img id="img-efootball" src="https://placehold.co/400x250/1a1535/00ffcc?text=eFootball" alt="eFootball">
-                <h3 id="title-efootball">eFootball</h3>
-            </div>
+            <div class="game-card" onclick="goToGame('freefire')"><img id="img-freefire" src="https://placehold.co/400x250/1a1535/00ffcc?text=Free+Fire" alt="FF"><h3 id="title-freefire" style="padding:15px; color:#fff;">Free Fire</h3></div>
+            <div class="game-card" onclick="goToGame('pubg')"><img id="img-pubg" src="https://placehold.co/400x250/1a1535/00ffcc?text=PUBG" alt="PUBG"><h3 id="title-pubg" style="padding:15px; color:#fff;">PUBG Mobile</h3></div>
+            <div class="game-card" onclick="goToGame('ludo')"><img id="img-ludo" src="https://placehold.co/400x250/1a1535/00ffcc?text=Ludo" alt="Ludo"><h3 id="title-ludo" style="padding:15px; color:#fff;">Ludo</h3></div>
+            <div class="game-card" onclick="goToGame('efootball')"><img id="img-efootball" src="https://placehold.co/400x250/1a1535/00ffcc?text=eFootball" alt="eFootball"><h3 id="title-efootball" style="padding:15px; color:#fff;">eFootball</h3></div>
         </div>
     </div>
+    <div class="support-wrapper"><a href="https://wa.me/8801806803773" target="_blank" class="support-btn">💬 Contact Admin Live Support</a></div>
 
-    <div class="support-wrapper">
-        <a href="https://wa.me/8801806803773" target="_blank" class="support-btn">
-            💬 Contact Admin Live Support
-        </a>
-    </div>
-
-    <!-- Home Popup -->
     <div id="home-popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center;">
         <div style="background:#15102a; border:2px solid #00ffcc; padding:25px; border-radius:15px; width:90%; max-width:350px; text-align:center;">
             <h2 style="color:#00ffcc;">Important Update</h2>
-            <p style="color:#fff; margin:15px 0;">Stay updated with our latest tournaments and matches! Join our community.</p>
+            <p style="color:#fff; margin:15px 0;">Stay updated with our latest tournaments!</p>
             <a href="https://t.me/your_telegram_channel" style="background:#0088cc; color:#fff; display:block; padding:12px; text-decoration:none; border-radius:8px; margin-bottom:10px; font-weight:bold;">Join Telegram</a>
             <button onclick="document.getElementById('home-popup').style.display='none'" style="background:transparent; border:1px solid #ff0055; color:#ff0055; padding:8px 20px; cursor:pointer; border-radius:5px; margin-top:10px;">Close</button>
         </div>
     </div>
 
     <script type="module">
+        // @ts-nocheck
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
-            authDomain: "igl-tournament-f788f.firebaseapp.com",
-            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
-            projectId: "igl-tournament-f788f",
-            storageBucket: "igl-tournament-f788f.firebasestorage.app",
-            messagingSenderId: "636254933423",
-            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
-            measurementId: "G-9EL1JQM2E4"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                const userRef = ref(database, 'users/' + user.uid);
-                onValue(userRef, (snapshot) => {
-                    const data = snapshot.val();
-                    if(data) {
-                        document.getElementById('user-name').innerText = data.username || data.fullName;
-                        document.getElementById('user-balance').innerText = data.balance;
-                        document.getElementById('user-id').innerText = user.uid.substring(0, 8) + '...';
-                    }
-                });
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
-
-        function setSafeImage(elementId, inputUrl) {
-            if(!inputUrl) return;
-            try {
-                let cleanUrl = inputUrl.trim();
-                if (cleanUrl.toLowerCase().startsWith("http")) {
-                    cleanUrl = "https://" + cleanUrl.substring(cleanUrl.indexOf("//") + 2);
-                }
-                document.getElementById(elementId).src = encodeURI(cleanUrl);
-            } catch (e) {
-                console.error("Image loading failed for " + elementId, e);
-            }
-        }
-
-        const settingsRef = ref(database, 'admin_settings/');
-        onValue(settingsRef, (snapshot) => {
-            const settings = snapshot.val();
-            if(settings) {
-                if(settings.notice) {
-                    document.getElementById('live-notice').innerText = settings.notice;
-                }
-                if(settings.categories) {
-                    const cats = settings.categories;
-                    if(cats.freefire && cats.freefire.image) {
-                        setSafeImage('img-freefire', cats.freefire.image);
-                        document.getElementById('title-freefire').innerText = cats.freefire.title || "Free Fire";
-                    }
-                    if(cats.pubg && cats.pubg.image) {
-                        setSafeImage('img-pubg', cats.pubg.image);
-                        document.getElementById('title-pubg').innerText = cats.pubg.title || "PUBG Mobile";
-                    }
-                    if(cats.ludo && cats.ludo.image) {
-                        setSafeImage('img-ludo', cats.ludo.image);
-                        document.getElementById('title-ludo').innerText = cats.ludo.title || "Ludo";
-                    }
-                    if(cats.efootball && cats.efootball.image) {
-                        setSafeImage('img-efootball', cats.efootball.image);
-                        document.getElementById('title-efootball').innerText = cats.efootball.title || "eFootball";
-                    }
-                }
-            }
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth).then(() => {
-                window.location.href = 'index.html';
-            });
-        });
-    </script>
-
-    <script>
-        function goToGame(gameName) {
-            localStorage.setItem('selectedGame', gameName);
-            window.location.href = 'game-matches.html';
-        }
-
-        // Popup logic: ৪ সেকেন্ড পর পপআপ ওপেন হবে
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                document.getElementById('home-popup').style.display = 'flex';
-            }, 4000);
-        });
+        const app = initializeApp({ apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA", authDomain: "igl-tournament-f788f.firebaseapp.com", databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com", projectId: "igl-tournament-f788f", storageBucket: "igl-tournament-f788f.firebasestorage.app", messagingSenderId: "636254933423", appId: "1:636254933423:web:92a000034601d5e20b9f5a" });
+        const auth = getAuth(app), database = getDatabase(app);
+        onAuthStateChanged(auth, (u) => { if(u) { onValue(ref(database, 'users/' + u.uid), (s) => { const d = s.val(); if(d) { document.getElementById('user-name').innerText = d.username || d.fullName; document.getElementById('user-balance').innerText = d.balance; document.getElementById('user-id').innerText = u.uid.substring(0,8) + '...'; }}); } else { window.location.href = 'index.html'; }});
+        window.goToGame = (g) => { localStorage.setItem('selectedGame', g); window.location.href = 'game-matches.html'; };
+        document.getElementById('logout-btn').addEventListener('click', () => signOut(auth).then(() => window.location.href = 'index.html'));
+        window.addEventListener('load', () => setTimeout(() => document.getElementById('home-popup').style.display = 'flex', 4000));
     </script>
 </body>
 </html>
