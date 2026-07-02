@@ -6,63 +6,32 @@
     <title>Admin Dashboard - RB Tournament Zone</title>
     <style>
         /* Modern Cyberpunk Admin Dashboard Theme */
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0b0914; color: #ffffff; display: flex; min-height: 100vh; }
         
         /* Sidebar Styling */
-        .sidebar {
-            width: 260px; background: #120e24; padding: 30px 20px;
-            border-right: 1px solid rgba(255, 0, 85, 0.2); display: flex; flex-direction: column; justify-content: space-between;
-        }
+        .sidebar { width: 260px; background: #120e24; padding: 30px 20px; border-right: 1px solid rgba(255, 0, 85, 0.2); display: flex; flex-direction: column; justify-content: space-between; }
         .sidebar h2 { color: #ff0055; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 40px; text-align: center; }
-        .sidebar menu a {
-            display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; transition: 0.3s;
-        }
+        .sidebar menu a { display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; transition: 0.3s; }
         .sidebar menu a.active, .sidebar menu a:hover { background: rgba(255, 0, 85, 0.1); color: #ff0055; border-left: 4px solid #ff0055; }
         .logout-btn { background: #ff0055; color: #fff; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; }
         
         /* Main Panel Content */
         .main-content { flex: 1; padding: 40px; overflow-y: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; margin-bottom: 30px; }
-        .header h1 { font-size: 26px; }
-        
-        /* Grid Boxes for Settings */
         .admin-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(450px, 1fr)); gap: 30px; }
         .panel-card { background: #120e24; border: 1px solid rgba(255, 255, 255, 0.05); padding: 25px; border-radius: 12px; }
         .panel-card h3 { color: #00ffcc; margin-bottom: 20px; font-size: 18px; border-left: 3px solid #00ffcc; padding-left: 10px; text-transform: uppercase; }
         
-        /* Form components */
+        /* Form & Table */
         .form-group { margin-bottom: 15px; }
         label { display: block; margin-bottom: 6px; color: #ccc; font-size: 13px; }
-        input, select, textarea {
-            width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; font-size: 15px;
-        }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: #ff0055; }
-        .row-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .triple-row-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
-        .triple-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-        
-        .action-btn {
-            width: 100%; padding: 12px; background: #00ffcc; color: #0b0914; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px;
-        }
-        .action-btn:hover { background: #00ccaa; box-shadow: 0 0 15px rgba(0,255,204,0.4); }
-        .btn-notice { background: #ff0055; color: #fff; }
-        .btn-notice:hover { background: #d00045; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
-
-        /* Table Styling for Match List */
-        .match-table { width: 100%; border-collapse: collapse; margin-top: 15px; color: #fff; text-align: left; }
-        .match-table th { color: #ff0055; border-bottom: 2px solid rgba(255, 0, 85, 0.3); padding: 12px; font-size: 14px; text-transform: uppercase; }
-        .match-table td { padding: 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 14px; vertical-align: middle; }
-        .manage-btn { border: none; padding: 6px 12px; margin: 2px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 12px; }
-        .btn-room { background: #00ffcc; color: #000; }
-        .btn-room:hover { background: #00ccaa; }
-        .btn-result { background: #ffcc00; color: #000; }
-        .btn-result:hover { background: #d4aa00; }
-        .btn-del { background: #ff0055; color: #fff; }
-        .btn-del:hover { background: #d00045; }
+        input, select, textarea { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; color: #fff; }
+        .action-btn { width: 100%; padding: 12px; background: #00ffcc; color: #0b0914; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .match-table { width: 100%; border-collapse: collapse; margin-top: 15px; color: #fff; }
+        .match-table th { color: #ff0055; padding: 12px; }
+        .match-table td { padding: 12px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .btn-manage { padding: 5px 10px; cursor: pointer; border: none; border-radius: 4px; margin: 2px; }
     </style>
 </head>
 <body>
@@ -70,249 +39,98 @@
     <div class="sidebar">
         <div>
             <h2>RB Admin Panel</h2>
-            <menu style="margin-top: 20px;">
-                <a href="admin-dashboard.html" class="active">Tournament & Config</a>
-                <a href="admin-requests.html">Deposit & Users Requests</a>
-            </menu>
+            <menu><a href="#" class="active">Tournament & Config</a><a href="#">Requests</a></menu>
         </div>
-        <a href="#" class="logout-btn" id="admin-logout">Secure Log Out</a>
+        <a href="#" class="logout-btn" id="admin-logout">Log Out</a>
     </div>
 
     <div class="main-content">
-        <div class="header">
-            <h1>Dashboard & Control Center</h1>
-            <div style="color: #ff0055; font-weight: bold;">Status: Secure Session Active</div>
-        </div>
+        <div class="header"><h1>Dashboard Control Center</h1></div>
 
         <div class="admin-grid">
-            <div class="panel-card">
-                <h3>1. Live Notice Board</h3>
-                <form id="notice-form">
-                    <div class="form-group">
-                        <label>Scrolling Text Notice</label>
-                        <textarea id="app-notice" rows="3" placeholder="Enter scrolling warning or disclaimer notice here..." required></textarea>
-                    </div>
-                    <button type="submit" class="action-btn btn-notice">Update Live Notice</button>
-                </form>
-            </div>
-
-            <!-- নতুন রুলস ম্যানেজমেন্ট কার্ড -->
-            <div class="panel-card">
-                <h3>5. Tournament Rules Management</h3>
-                <form id="rules-form">
-                    <div class="form-group">
-                        <label>Rules Content (HTML format supported)</label>
-                        <textarea id="app-rules" rows="5" placeholder="<li>Rule 1: ...</li><li>Rule 2: ...</li>" required></textarea>
-                    </div>
-                    <button type="submit" class="action-btn">Update Rules</button>
-                </form>
-            </div>
-
-            <div class="panel-card">
-                <h3>2. Category Images & Labels</h3>
-                <form id="category-config-form">
-                    <div class="form-group">
-                        <label>Target Game Category</label>
-                        <select id="config-game-select" required>
-                            <option value="freefire">Free Fire</option>
-                            <option value="pubg">PUBG Mobile</option>
-                            <option value="ludo">Ludo</option>
-                            <option value="efootball">eFootball</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Custom Title Label</label>
-                        <input type="text" id="config-game-title" placeholder="e.g. Free Fire Premium" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Direct Image Link URL</label>
-                        <input type="url" id="config-game-img" placeholder="https://example.com/image.jpg" required>
-                    </div>
-                    <button type="submit" class="action-btn">Update Category Look</button>
-                </form>
-            </div>
-
             <div class="panel-card" style="grid-column: span 2;">
-                <h3>3. Create & Launch New Tournament Match</h3>
+                <h3>Create New Tournament</h3>
                 <form id="match-launch-form">
-                    <div class="row-group">
-                        <div class="form-group">
-                            <label>Select Main Game</label>
-                            <select id="match-game" required>
-                                <option value="freefire">Free Fire</option>
-                                <option value="pubg">PUBG Mobile</option>
-                                <option value="ludo">Ludo</option>
-                                <option value="efootball">eFootball</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Match Sub-Category Mode</label>
-                            <input type="text" id="match-mode" placeholder="e.g. CS Match, BR Match" required>
-                        </div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <select id="match-game"><option value="freefire">Free Fire</option><option value="pubg">PUBG</option></select>
+                        <input type="text" id="match-mode" placeholder="Mode (e.g. Squad)" required>
                     </div>
-
-                    <div class="row-group">
-                        <div class="form-group">
-                            <label>Tournament Title Name</label>
-                            <input type="text" id="match-title" placeholder="e.g. Daily Clash Squad" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Match Specific Logo/Banner URL Link</label>
-                            <input type="url" id="match-logo" placeholder="https://example.com/logo.jpg">
-                        </div>
+                    <input type="text" id="match-title" placeholder="Match Title" required>
+                    <input type="text" id="match-time" placeholder="Time" required>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:10px;">
+                        <input type="number" id="match-fee" placeholder="Fee">
+                        <input type="number" id="match-prize" placeholder="Prize">
+                        <input type="number" id="match-perkill" placeholder="Per Kill">
                     </div>
-
-                    <div class="row-group">
-                        <div class="form-group">
-                            <label>Match Type</label>
-                            <input type="text" id="match-type" placeholder="e.g. Solo, Duo, Squad" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Schedule Time & Date</label>
-                            <input type="text" id="match-time" placeholder="e.g. 15 July - 08:00 PM" required>
-                        </div>
-                    </div>
-
-                    <div class="triple-row-group">
-                        <div class="form-group">
-                            <label>Entry Fee (BDT)</label>
-                            <input type="number" id="match-fee" placeholder="e.g. 50" min="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Total Prize Pool (BDT)</label>
-                            <input type="number" id="match-prize" placeholder="e.g. 500" min="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label>🎯 Per Kill Rate (BDT)</label>
-                            <input type="number" id="match-perkill" placeholder="0" min="0" value="0" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group" style="border: 1px dashed rgba(0, 255, 204, 0.3); padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.2);">
-                        <label style="color: #00ffcc; font-weight: bold; margin-bottom: 10px;">🏆 Standings Prize Distribution</label>
-                        <div class="triple-group">
-                            <div class="form-group"><label>🥇 1st</label><input type="number" id="match-prize1" required></div>
-                            <div class="form-group"><label>🥈 2nd</label><input type="number" id="match-prize2" required></div>
-                            <div class="form-group"><label>🥉 3rd</label><input type="number" id="match-prize3" required></div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Total Player Slots</label>
-                        <input type="number" id="match-slots" value="48" required>
-                    </div>
-
-                    <button type="submit" class="action-btn" style="background:#ff0055; color:#fff;">Launch Tournament Live 🚀</button>
+                    <button type="submit" class="action-btn">Launch Match</button>
                 </form>
             </div>
 
             <div class="panel-card" style="grid-column: span 2;">
-                <h3>4. Live Match Management</h3>
-                <div style="overflow-x: auto;">
-                    <table class="match-table">
-                        <thead><tr><th>Game / Title</th><th>Schedule, Fee & Slots</th><th>Room ID / Pass</th><th>Actions</th></tr></thead>
-                        <tbody id="live-match-list"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="panel-card" style="grid-column: span 2; border: 1px solid rgba(255, 204, 0, 0.2);">
-                <h3 style="color: #ffcc00; border-left-color: #ffcc00;">5. Completed Match Results Management</h3>
-                <div style="overflow-x: auto;">
-                    <table class="match-table">
-                        <thead><tr><th>Game / Title</th><th>Played Date</th><th>Winners</th><th>Action</th></tr></thead>
-                        <tbody id="completed-results-list"></tbody>
-                    </table>
-                </div>
+                <h3>Live Match Management</h3>
+                <table class="match-table">
+                    <thead><tr><th>Title</th><th>Room ID / Pass</th><th>Actions</th></tr></thead>
+                    <tbody id="live-match-list"></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, update, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, push, set, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
-            authDomain: "igl-tournament-f788f.firebaseapp.com",
-            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
-            projectId: "igl-tournament-f788f",
-            storageBucket: "igl-tournament-f788f.firebasestorage.app",
-            messagingSenderId: "636254933423",
-            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
-            measurementId: "G-9EL1JQM2E4"
-        };
-
+        // আপনার Firebase কনফিগ বসান
+        const firebaseConfig = { /* আপনার কনফিগ এখানে বসান */ };
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const database = getDatabase(app);
 
-        if(localStorage.getItem('rbAdminSession') !== 'active') window.location.href = 'admin-login.html';
-
-        // Rules Update Logic
-        document.getElementById('rules-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const rulesContent = document.getElementById('app-rules').value.trim();
-            update(ref(database, 'admin_settings/'), { rules: rulesContent }).then(() => {
-                alert("Rules updated successfully!");
-                document.getElementById('rules-form').reset();
-            });
-        });
-
-        // 1. Notice Board
-        document.getElementById('notice-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            update(ref(database, 'admin_settings/'), { notice: document.getElementById('app-notice').value.trim() }).then(() => {
-                alert("Notice board updated!");
-                document.getElementById('notice-form').reset();
-            });
-        });
-
-        // Other existing logic remains same...
-        // [Existing logic code here is omitted for brevity but should be in your final file]
-        document.getElementById('category-config-form').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const selectedGame = document.getElementById('config-game-select').value;
-            update(ref(database, `admin_settings/categories/${selectedGame}`), {
-                title: document.getElementById('config-game-title').value.trim(),
-                image: document.getElementById('config-game-img').value.trim()
-            }).then(() => alert("Category updated!"));
-        });
-
+        // ম্যাচ লঞ্চ লজিক
         document.getElementById('match-launch-form').addEventListener('submit', (e) => {
             e.preventDefault();
-            const gameNode = document.getElementById('match-game').value;
-            const matchData = {
-                mode: document.getElementById('match-mode').value.trim(),
-                title: document.getElementById('match-title').value.trim(),
-                logo: document.getElementById('match-logo').value.trim(),
-                type: document.getElementById('match-type').value.trim(),
-                time: document.getElementById('match-time').value.trim(),
-                entryFee: parseInt(document.getElementById('match-fee').value),
-                prize: parseInt(document.getElementById('match-prize').value),
-                perKill: parseInt(document.getElementById('match-perkill').value || 0),
-                prize1: parseInt(document.getElementById('match-prize1').value || 0),
-                prize2: parseInt(document.getElementById('match-prize2').value || 0),
-                prize3: parseInt(document.getElementById('match-prize3').value || 0),
-                totalSlots: parseInt(document.getElementById('match-slots').value || 48), 
-                roomId: "Not Set",    
-                roomPass: "Not Set"   
-            };
-            set(push(ref(database, `matches/${gameNode}`)), matchData).then(() => {
-                alert("Tournament launched!");
-                document.getElementById('match-launch-form').reset();
-            });
+            const game = document.getElementById('match-game').value;
+            set(push(ref(database, `matches/${game}`)), {
+                title: document.getElementById('match-title').value,
+                mode: document.getElementById('match-mode').value,
+                time: document.getElementById('match-time').value,
+                entryFee: document.getElementById('match-fee').value,
+                prize: document.getElementById('match-prize').value,
+                perKill: document.getElementById('match-perkill').value,
+                roomId: "Not Set", roomPass: "Not Set"
+            }).then(() => alert("Match Launched!"));
         });
 
-        // Load existing data logic...
-        document.getElementById('admin-logout').addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth).then(() => {
-                localStorage.removeItem('rbAdminSession');
-                window.location.href = 'admin-login.html';
-            });
+        // লাইভ টেবিল লোড করা
+        onValue(ref(database, 'matches'), (snap) => {
+            const list = document.getElementById('live-match-list');
+            list.innerHTML = "";
+            const matches = snap.val();
+            for (let game in matches) {
+                for (let id in matches[game]) {
+                    const m = matches[game][id];
+                    list.innerHTML += `<tr>
+                        <td>${m.title}</td>
+                        <td>
+                            <input id="rid-${id}" value="${m.roomId}" style="width:80px; padding:2px;">
+                            <input id="rp-${id}" value="${m.roomPass}" style="width:80px; padding:2px;">
+                        </td>
+                        <td>
+                            <button class="btn-manage" style="background:#00ffcc" onclick="updateRoom('${game}', '${id}')">Save</button>
+                            <button class="btn-manage" style="background:#ff0055; color:white" onclick="deleteMatch('${game}', '${id}')">Del</button>
+                        </td>
+                    </tr>`;
+                }
+            }
         });
+
+        // আপডেট ও ডিলিট
+        window.updateRoom = (g, id) => {
+            update(ref(database, `matches/${g}/${id}`), {
+                roomId: document.getElementById(`rid-${id}`).value,
+                roomPass: document.getElementById(`rp-${id}`).value
+            }).then(() => alert("Updated!"));
+        };
+        window.deleteMatch = (g, id) => { if(confirm("Confirm Delete?")) remove(ref(database, `matches/${g}/${id}`)); };
     </script>
 </body>
-                                                                            </html>
+</html>
