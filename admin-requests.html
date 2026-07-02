@@ -93,7 +93,10 @@
                 let req = data[id];
                 body.innerHTML += `<tr><td>${req.email}</td><td>${req.method}</td><td>${req.amount}</td><td>${req.sender}</td><td>${req.trxid}</td>
                 <td><span class="badge ${req.status.toLowerCase()}">${req.status}</span></td>
-                <td>${req.status === 'Pending' ? `<button class="approve-btn" onclick="approveDeposit('${id}','${req.userId}',${req.amount})">Approve</button>` : ''}</td></tr>`;
+                <td>${req.status === 'Pending' ? 
+                    `<button class="approve-btn" onclick="approveDeposit('${id}','${req.userId}',${req.amount})">Approve</button>
+                     <button class="reject-btn" onclick="rejectDeposit('${id}')">Reject</button>` 
+                    : ''}</td></tr>`;
             }
         });
 
@@ -116,6 +119,13 @@
         window.approveDeposit = (id, userId, amount) => {
             runTransaction(ref(database, `users/${userId}/balance`), (b) => (b || 0) + amount);
             update(ref(database, `deposit_requests/${id}`), { status: 'Approved' });
+        };
+
+        window.rejectDeposit = (id) => {
+            if(confirm("Are you sure you want to reject this deposit request?")) {
+                update(ref(database, `deposit_requests/${id}`), { status: 'Rejected' });
+                alert("Deposit request rejected!");
+            }
         };
 
         window.approveWithdraw = (id) => {
