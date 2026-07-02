@@ -66,14 +66,6 @@
             transition: 0.3s;
             font-weight: bold;
         }
-        .nav-buttons a.results-nav {
-            border-color: #ffcc00;
-            color: #ffcc00;
-        }
-        .nav-buttons a.results-nav:hover {
-            background: #ffcc00;
-            color: #0f0c20;
-        }
         /* Rules Button Style */
         .nav-buttons a.rules-nav {
             border-color: #00ffcc;
@@ -239,7 +231,6 @@
         <div class="logo">IGL Tournament Zone</div>
         <div class="nav-buttons">
             <a href="rules.html" class="rules-nav">Rules 📜</a>
-            <a href="results.html" class="results-nav">Match Results 🏆</a>
             <a href="#" id="logout-btn" class="logout-nav">Log Out</a>
         </div>
     </header>
@@ -258,23 +249,19 @@
 
     <div class="main-container">
         <h2 class="section-title">Select Game Category</h2>
-        
         <div class="grid-container">
             <div class="game-card" onclick="goToGame('freefire')">
                 <img id="img-freefire" src="https://placehold.co/400x250/1a1535/00ffcc?text=Free+Fire" alt="Free Fire">
                 <h3 id="title-freefire">Free Fire</h3>
             </div>
-
             <div class="game-card" onclick="goToGame('pubg')">
                 <img id="img-pubg" src="https://placehold.co/400x250/1a1535/00ffcc?text=PUBG+Mobile" alt="PUBG">
                 <h3 id="title-pubg">PUBG Mobile</h3>
             </div>
-
             <div class="game-card" onclick="goToGame('ludo')">
                 <img id="img-ludo" src="https://placehold.co/400x250/1a1535/00ffcc?text=Ludo" alt="Ludo">
                 <h3 id="title-ludo">Ludo</h3>
             </div>
-
             <div class="game-card" onclick="goToGame('efootball')">
                 <img id="img-efootball" src="https://placehold.co/400x250/1a1535/00ffcc?text=eFootball" alt="eFootball">
                 <h3 id="title-efootball">eFootball</h3>
