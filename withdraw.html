@@ -77,13 +77,9 @@
             e.preventDefault();
             const amount = parseInt(document.getElementById('amount').value);
             
-            // উইথড্র লিমিট চেক: মিনিমাম ৫০ এবং ম্যাক্সিমাম ১০০০
-            if (amount < 50) {
-                alert("Minimum withdrawal amount is 50 BDT.");
-                return;
-            }
-            if (amount > 1000) {
-                alert("Maximum withdrawal amount is 1000 BDT.");
+            // লিমিট চেক লজিক (৫০ থেকে ১০০০)
+            if (amount < 50 || amount > 1000) {
+                alert("Withdrawal limit is between 50 and 1000 BDT.");
                 return;
             }
 
