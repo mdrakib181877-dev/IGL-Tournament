@@ -18,11 +18,8 @@
         .match-main-info { display: flex; align-items: center; justify-content: space-between; width: 100%; pointer-events: none; }
         .match-details { display: flex; align-items: center; gap: 20px; }
         .match-logo { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; background: #15102a; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .info h3 { color: #fff; margin-bottom: 5px; font-size: 18px; }
-        .info p { color: #aaa; font-size: 14px; margin-bottom: 3px; }
         .match-action { text-align: right; pointer-events: auto; }
         .join-btn { background: #ff0055; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; width: 100%; }
-        .join-btn:hover { background: #d00045; }
         .join-btn:disabled { background: #332a45; color: #888; cursor: not-allowed; }
         .collapsible-content { display: none; margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; }
         .joined-players-box { margin-top: 15px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 8px; }
@@ -37,23 +34,24 @@
     <header>
         <a href="home.html" class="back-btn">← Back to Home</a>
         <div class="game-title" id="current-game-title">Matches</div>
-        <div style="color: #00ffcc; font-weight: bold;">Balance: <span id="header-balance">Loading...</span> BDT</div>
+        <div style="color: #00ffcc; font-weight: bold;">Balance: <span id="header-balance">0</span> BDT</div>
     </header>
     <div class="container">
         <div class="matches-list" id="matches-display"></div>
     </div>
     <div class="modal" id="joinModal">
         <div class="modal-content">
-            <span class="close-modal" id="closeModalBtn" style="cursor:pointer; float:right;">&times;</span>
+            <span id="closeModalBtn" style="cursor:pointer; float:right; font-size:24px;">&times;</span>
             <h3 id="modal-match-title">Join Tournament</h3>
             <form id="join-match-form">
-                <input type="text" id="player-uid" placeholder="Enter In-Game Name" style="width:100%; padding:12px; background:#000; border:1px solid #444; color:#fff; margin-bottom:15px;" required>
+                <input type="text" id="player-uid" placeholder="Enter In-Game Name" style="width:100%; padding:12px; background:#000; border:1px solid #444; color:#fff; margin:15px 0;" required>
                 <button type="submit" class="confirm-btn">Confirm & Join</button>
             </form>
         </div>
     </div>
 
     <script type="module">
+        // @ts-nocheck
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
@@ -66,7 +64,10 @@
         onAuthStateChanged(auth, (u) => { 
             if(u) { 
                 currentUserId = u.uid; 
-                onValue(ref(database, 'users/' + u.uid), (s) => document.getElementById('header-balance').innerText = s.val()?.balance || 0);
+                onValue(ref(database, 'users/' + u.uid), (s) => {
+                    const bal = s.val()?.balance || 0;
+                    document.getElementById('header-balance').innerText = bal;
+                });
                 loadMatches(); 
             } 
         });
@@ -76,6 +77,8 @@
                 const matches = snap.val();
                 const displayZone = document.getElementById('matches-display');
                 displayZone.innerHTML = "";
+                if(!matches) return;
+                
                 for (let key in matches) {
                     const match = matches[key];
                     const card = document.createElement('div');
@@ -94,17 +97,22 @@
                         </div>
                         <div class="collapsible-content">
                             <div class="joined-players-box"><p>👥 Joined Players:</p><div class="player-list" id="list-${key}"></div></div>
-                            <button class="join-btn" id="btn-${key}" onclick="openJoinModal('${key}', '${match.title}')">JOIN MATCH</button>
+                            <button class="join-btn" id="btn-${key}">JOIN MATCH</button>
                         </div>`;
                     card.onclick = (e) => { if(!e.target.classList.contains('join-btn')) { const c = card.querySelector('.collapsible-content'); c.style.display = c.style.display === 'block' ? 'none' : 'block'; }};
                     displayZone.appendChild(card);
+                    
+                    const btn = card.querySelector(`#btn-${key}`);
+                    btn.onclick = () => { 
+                        selectedMatchId = key; 
+                        document.getElementById('modal-match-title').innerText = "Join: " + match.title; 
+                        document.getElementById('joinModal').style.display = 'flex'; 
+                    };
                     
                     onValue(ref(database, `match_registrations/${selectedGame}/${key}`), (rSnap) => {
                         const regs = rSnap.val() || {};
                         const count = Object.keys(regs).length;
                         const total = match.totalSlots || 0;
-                        const btn = card.querySelector(`#btn-${key}`);
-                        
                         document.getElementById(`slot-info-${key}`).innerText = `Joined: ${count} / ${total} Slots`;
                         card.querySelector(`#list-${key}`).innerHTML = Object.values(regs).map(r => `<span class="player-tag">${r.gameUid}</span>`).join('');
                         
@@ -115,12 +123,15 @@
                 }
             });
         }
-        window.openJoinModal = (id, title) => { selectedMatchId = id; document.getElementById('modal-match-title').innerText = "Join: " + title; document.getElementById('joinModal').style.display = 'flex'; };
+        
         document.getElementById('closeModalBtn').onclick = () => document.getElementById('joinModal').style.display = 'none';
+        
         document.getElementById('join-match-form').onsubmit = async (e) => {
             e.preventDefault();
-            await update(ref(database), { [`match_registrations/${selectedGame}/${selectedMatchId}/${push(ref(database)).key}`]: { userId: currentUserId, gameUid: document.getElementById('player-uid').value } });
-            alert("Joined successfully!"); document.getElementById('joinModal').style.display = 'none';
+            const playerUid = document.getElementById('player-uid').value;
+            await update(ref(database), { [`match_registrations/${selectedGame}/${selectedMatchId}/${push(ref(database)).key}`]: { userId: currentUserId, gameUid: playerUid } });
+            alert("Joined successfully!"); 
+            document.getElementById('joinModal').style.display = 'none';
         };
     </script>
 </body>
