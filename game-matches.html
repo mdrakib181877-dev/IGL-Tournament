@@ -12,9 +12,6 @@
         .back-btn { color: #00ffcc; text-decoration: none; font-weight: bold; font-size: 16px; }
         .game-title { color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 24px; }
         .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
-        .tabs-container { display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; }
-        .tab-btn { background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
-        .tab-btn.active, .tab-btn:hover { background: #00ffcc; color: #0f0c20; border-color: #00ffcc; box-shadow: 0 0 10px rgba(0, 255, 204, 0.3); }
         .matches-list { display: flex; flex-direction: column; gap: 20px; }
         .match-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; transition: 0.3s; cursor: pointer; }
         .match-card:hover { border-color: #ff0055; background: rgba(255, 255, 255, 0.05); }
@@ -23,48 +20,34 @@
         .match-logo { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; background: #15102a; border: 1px solid rgba(255, 255, 255, 0.1); }
         .info h3 { color: #fff; margin-bottom: 5px; font-size: 18px; }
         .info p { color: #aaa; font-size: 14px; margin-bottom: 3px; }
-        .info .highlight { color: #00ffcc; font-weight: bold; }
-        .sub-prizes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; font-size: 12px; background: rgba(0, 0, 0, 0.2); padding: 6px 10px; border-radius: 6px; width: max-content; border: 1px solid rgba(255, 255, 255, 0.05); }
-        .p1 { color: #ffcc00; } .p2 { color: #dfdfdf; } .p3 { color: #cd7f32; }
-        .per-kill { color: #ff0055; border-left: 1px solid rgba(255, 255, 255, 0.2); padding-left: 10px; font-weight: bold !important; }
         .match-action { text-align: right; pointer-events: auto; }
         .join-btn { background: #ff0055; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .join-btn:hover { background: #d00045; box-shadow: 0 0 15px rgba(255, 0, 85, 0.5); }
-        .join-btn:disabled { background: #332a45; color: #888; cursor: not-allowed; box-shadow: none; }
-        .no-matches { text-align: center; color: #888; padding: 40px; font-size: 18px; }
-        .room-details-box { background: rgba(0, 255, 204, 0.1); border: 1px dashed #00ffcc; padding: 12px; border-radius: 8px; width: 100%; display: flex; justify-content: space-around; align-items: center; }
-        .collapsible-content { display: none; margin-top: 10px; }
-        .joined-players-box { margin-top: 15px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .join-btn:hover { background: #d00045; }
+        .join-btn:disabled { background: #332a45; color: #888; cursor: not-allowed; }
+        .collapsible-content { display: none; margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; }
+        .joined-players-box { margin-top: 15px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 8px; }
         .player-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; max-height: 100px; overflow-y: auto; }
         .player-tag { background: #15102a; padding: 4px 10px; border-radius: 15px; font-size: 11px; color: #00ffcc; border: 1px solid rgba(0, 255, 204, 0.2); }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
         .modal-content { background: #15102a; border: 1px solid #00ffcc; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; position: relative; }
-        .close-modal { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 24px; cursor: pointer; }
-        .close-modal:hover { color: #fff; }
-        .modal h3 { color: #00ffcc; margin-bottom: 20px; text-align: center; }
-        .modal input { width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; color: #fff; margin-bottom: 20px; font-size: 16px; }
         .confirm-btn { width: 100%; padding: 12px; background: #00ffcc; color: #0f0c20; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
     <header>
         <a href="home.html" class="back-btn">← Back to Home</a>
-        <div class="game-title" id="current-game-title">Loading Game...</div>
+        <div class="game-title" id="current-game-title">Loading...</div>
         <div style="color: #00ffcc; font-weight: bold;">Balance: <span id="header-balance">0</span> BDT</div>
     </header>
     <div class="container">
-        <div class="tabs-container" id="match-tabs"></div>
-        <h2 style="margin-bottom: 20px; font-size: 20px; border-left: 4px solid #ff0055; padding-left: 10px;">Available Matches</h2>
         <div class="matches-list" id="matches-display"></div>
     </div>
     <div class="modal" id="joinModal">
         <div class="modal-content">
-            <span class="close-modal" id="closeModalBtn">&times;</span>
+            <span class="close-modal" id="closeModalBtn" style="cursor:pointer; float:right;">&times;</span>
             <h3 id="modal-match-title">Join Tournament</h3>
-            <p style="text-align: center; margin-bottom: 15px; color: #ff0055; font-weight: bold;">Entry Fee: <span id="modal-entry-fee">0</span> BDT</p>
             <form id="join-match-form">
-                <label for="player-uid">In-Game Name / UID:</label>
-                <input type="text" id="player-uid" required>
+                <input type="text" id="player-uid" placeholder="Enter In-Game Name / UID" style="width:100%; padding:12px; background:#000; border:1px solid #444; color:#fff; margin-bottom:15px;" required>
                 <button type="submit" class="confirm-btn">Confirm & Join</button>
             </form>
         </div>
@@ -73,10 +56,12 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        
         const app = initializeApp({ apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA", authDomain: "igl-tournament-f788f.firebaseapp.com", databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com", projectId: "igl-tournament-f788f", storageBucket: "igl-tournament-f788f.firebasestorage.app", messagingSenderId: "636254933423", appId: "1:636254933423:web:92a000034601d5e20b9f5a" });
         const auth = getAuth(app), database = getDatabase(app);
         const selectedGame = localStorage.getItem('selectedGame') || 'freefire';
-        let currentUserId = null, selectedMatchId = null, selectedMatchFee = 0;
+        let currentUserId = null, selectedMatchId = null;
+
         onAuthStateChanged(auth, (u) => { if(u) { currentUserId = u.uid; loadMatches(); } });
         
         function loadMatches() {
@@ -88,44 +73,26 @@
                     const match = matches[key];
                     const card = document.createElement('div');
                     card.className = 'match-card';
-                    card.onclick = (e) => { if(!e.target.classList.contains('join-btn')) { 
-                        const c = card.querySelector('.collapsible-content'); 
-                        c.style.display = c.style.display === 'block' ? 'none' : 'block'; 
-                    }};
-                    card.innerHTML = `
-                        <div class="match-main-info">
-                            <div class="match-details">
-                                <img class="match-logo" src="${match.logo || 'https://placehold.co/80x80'}">
-                                <div><h3>${match.title}</h3><p>Time: ${match.time}</p></div>
-                            </div>
-                            <div class="match-action">Fee: ${match.entryFee} BDT</div>
-                        </div>
-                        <div class="collapsible-content">
-                            <div class="joined-players-box">
-                                <p>👥 Joined Players:</p>
-                                <div class="player-list" id="list-${key}"></div>
-                            </div>
-                            <button class="join-btn" onclick="openJoinModal('${key}', '${match.title}', ${match.entryFee})">JOIN MATCH</button>
-                        </div>
-                    `;
+                    card.innerHTML = `<div class="match-main-info"><div class="match-details"><img class="match-logo" src="${match.logo || 'https://placehold.co/80x80'}"><div><h3>${match.title}</h3><p>Time: ${match.time}</p></div></div><div class="match-action">Fee: ${match.entryFee} BDT</div></div><div class="collapsible-content"><div class="joined-players-box"><p>👥 Joined Players:</p><div class="player-list" id="list-${key}"></div></div><button class="join-btn" id="btn-${key}" onclick="openJoinModal('${key}', '${match.title}')">JOIN MATCH</button></div>`;
+                    card.onclick = (e) => { if(!e.target.classList.contains('join-btn')) { const c = card.querySelector('.collapsible-content'); c.style.display = c.style.display === 'block' ? 'none' : 'block'; }};
                     displayZone.appendChild(card);
+                    
                     onValue(ref(database, `match_registrations/${selectedGame}/${key}`), (rSnap) => {
                         const regs = rSnap.val() || {};
+                        const btn = card.querySelector(`#btn-${key}`);
+                        const isJoined = Object.values(regs).some(r => r.userId === currentUserId);
                         card.querySelector(`#list-${key}`).innerHTML = Object.values(regs).map(r => `<span class="player-tag">${r.gameUid}</span>`).join('');
+                        if(isJoined) { btn.innerText = "ALREADY JOINED"; btn.disabled = true; }
                     });
                 }
             });
         }
-        window.openJoinModal = (id, title, fee) => {
-            selectedMatchId = id; selectedMatchFee = fee;
-            document.getElementById('modal-match-title').innerText = "Join: " + title;
-            document.getElementById('joinModal').style.display = 'flex';
-        };
+        window.openJoinModal = (id, title) => { selectedMatchId = id; document.getElementById('modal-match-title').innerText = "Join: " + title; document.getElementById('joinModal').style.display = 'flex'; };
         document.getElementById('closeModalBtn').onclick = () => document.getElementById('joinModal').style.display = 'none';
         document.getElementById('join-match-form').onsubmit = async (e) => {
             e.preventDefault();
             await update(ref(database), { [`match_registrations/${selectedGame}/${selectedMatchId}/${push(ref(database)).key}`]: { userId: currentUserId, gameUid: document.getElementById('player-uid').value } });
-            alert("Joined!"); document.getElementById('joinModal').style.display = 'none';
+            alert("Joined successfully!"); document.getElementById('joinModal').style.display = 'none';
         };
     </script>
 </body>
