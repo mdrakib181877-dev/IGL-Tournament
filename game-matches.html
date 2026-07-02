@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tournaments - RB Tournament Zone</title>
     <style>
-        /* Gamer Dark Theme Styling */
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0f0c20; color: #ffffff; padding-bottom: 50px; }
         header { background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
@@ -36,9 +35,11 @@
         <div class="game-title" id="current-game-title">Matches</div>
         <div style="color: #00ffcc; font-weight: bold;">Balance: <span id="header-balance">0</span> BDT</div>
     </header>
+
     <div class="container">
         <div class="matches-list" id="matches-display"></div>
     </div>
+
     <div class="modal" id="joinModal">
         <div class="modal-content">
             <span class="close-modal" id="closeModalBtn" style="cursor:pointer; float:right;">&times;</span>
@@ -49,20 +50,35 @@
             </form>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
         
-        const app = initializeApp({ apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA", authDomain: "igl-tournament-f788f.firebaseapp.com", databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com", projectId: "igl-tournament-f788f", storageBucket: "igl-tournament-f788f.firebasestorage.app", messagingSenderId: "636254933423", appId: "1:636254933423:web:92a000034601d5e20b9f5a" });
-        const auth = getAuth(app), database = getDatabase(app);
+        const firebaseConfig = {
+            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
+            authDomain: "igl-tournament-f788f.firebaseapp.com",
+            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
+            projectId: "igl-tournament-f788f",
+            storageBucket: "igl-tournament-f788f.firebasestorage.app",
+            messagingSenderId: "636254933423",
+            appId: "1:636254933423:web:92a000034601d5e20b9f5a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
         const selectedGame = localStorage.getItem('selectedGame') || 'freefire';
         let currentUserId = null, selectedMatchId = null;
 
         onAuthStateChanged(auth, (u) => { 
             if(u) { 
                 currentUserId = u.uid; 
-                onValue(ref(database, 'users/' + u.uid), (s) => document.getElementById('header-balance').innerText = s.val()?.balance || 0);
+                onValue(ref(database, 'users/' + u.uid), (s) => {
+                    const data = s.val();
+                    if(data) document.getElementById('header-balance').innerText = data.balance || 0;
+                });
                 loadMatches(); 
             } 
         });
@@ -72,11 +88,29 @@
                 const matches = snap.val();
                 const displayZone = document.getElementById('matches-display');
                 displayZone.innerHTML = "";
+                
+                if(!matches) return;
+
                 for (let key in matches) {
                     const match = matches[key];
                     const card = document.createElement('div');
                     card.className = 'match-card';
-                    card.innerHTML = `<div class="match-main-info"><div class="match-details"><img class="match-logo" src="${match.logo || 'https://placehold.co/80x80'}"><div><h3>${match.title}</h3><p>Time: ${match.time}</p><p id="slots-${key}" style="color:#00ffcc; font-weight:bold;">Loading slots...</p></div></div><div class="match-action">Fee: ${match.entryFee} BDT</div></div><div class="collapsible-content"><button class="join-btn" id="btn-${key}" onclick="openJoinModal('${key}', '${match.title}')">JOIN MATCH</button></div>`;
+                    card.innerHTML = `
+                        <div class="match-main-info">
+                            <div class="match-details">
+                                <img class="match-logo" src="${match.logo || 'https://placehold.co/80x80'}">
+                                <div>
+                                    <h3>${match.title}</h3>
+                                    <p>Time: ${match.time}</p>
+                                    <p id="slots-${key}" style="color:#00ffcc; font-weight:bold;">Loading...</p>
+                                </div>
+                            </div>
+                            <div class="match-action">Fee: ${match.entryFee} BDT</div>
+                        </div>
+                        <div class="collapsible-content">
+                            <button class="join-btn" id="btn-${key}" onclick="openJoinModal('${key}', '${match.title}')">JOIN MATCH</button>
+                        </div>
+                    `;
                     card.onclick = (e) => { if(!e.target.classList.contains('join-btn')) { const c = card.querySelector('.collapsible-content'); c.style.display = c.style.display === 'block' ? 'none' : 'block'; }};
                     displayZone.appendChild(card);
                     
@@ -85,7 +119,8 @@
                         const count = Object.keys(regs).length;
                         const total = match.totalSlots || 48;
                         const btn = card.querySelector(`#btn-${key}`);
-                        document.getElementById(`slots-${key}`).innerText = `Joined: ${count} / ${total}`;
+                        const slotText = document.getElementById(`slots-${key}`);
+                        if(slotText) slotText.innerText = `Joined: ${count} / ${total}`;
                         
                         const isJoined = Object.values(regs).some(r => r.userId === currentUserId);
                         if(isJoined) { btn.innerText = "ALREADY JOINED"; btn.disabled = true; }
@@ -94,11 +129,13 @@
                 }
             });
         }
+
         window.openJoinModal = (id, title) => { selectedMatchId = id; document.getElementById('modal-match-title').innerText = "Join: " + title; document.getElementById('joinModal').style.display = 'flex'; };
         document.getElementById('closeModalBtn').onclick = () => document.getElementById('joinModal').style.display = 'none';
         document.getElementById('join-match-form').onsubmit = async (e) => {
             e.preventDefault();
-            await update(ref(database), { [`match_registrations/${selectedGame}/${selectedMatchId}/${push(ref(database)).key}`]: { userId: currentUserId, gameUid: document.getElementById('player-uid').value } });
+            const playerUid = document.getElementById('player-uid').value;
+            await update(ref(database), { [`match_registrations/${selectedGame}/${selectedMatchId}/${push(ref(database)).key}`]: { userId: currentUserId, gameUid: playerUid } });
             alert("Joined successfully!"); document.getElementById('joinModal').style.display = 'none';
         };
     </script>
