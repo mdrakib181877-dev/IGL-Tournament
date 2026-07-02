@@ -156,7 +156,12 @@
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Your Firebase Configuration
+        // Welcome Redirect Logic
+        if (!localStorage.getItem('isWelcomeShown')) {
+            localStorage.setItem('isWelcomeShown', 'true');
+            window.location.href = 'welcome.html';
+        }
+
         const firebaseConfig = {
             apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
             authDomain: "igl-tournament-f788f.firebaseapp.com",
@@ -168,12 +173,10 @@
             measurementId: "G-9EL1JQM2E4"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // UI Toggle Logic
         const loginBox = document.getElementById('login-box');
         const signupBox = document.getElementById('signup-box');
         
@@ -189,7 +192,6 @@
             loginBox.classList.remove('hidden');
         });
 
-        // SIGN UP PROCESS
         document.getElementById('signup-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const name = document.getElementById('signup-name').value;
@@ -200,37 +202,31 @@
             createUserWithEmailAndPassword(auth, email, password)
                 .then((userCredential) => {
                     const user = userCredential.user;
-                    // Save extra user info to Realtime Database
                     set(ref(database, 'users/' + user.uid), {
                         fullName: name,
                         username: username,
                         email: email,
-                        balance: 0, // New users start with 0 BDT
-                        total_joined_matches: 0 // ট্র্যাকিং এর সুবিধার্থে নতুন ফিল্ড যুক্ত করা হলো
+                        balance: 0,
+                        total_joined_matches: 0
                     }).then(() => {
-                        alert('Registration Successful! Welcome to the Zone.');
+                        alert('Registration Successful!');
                         window.location.href = 'home.html';
                     });
                 })
-                .catch((error) => {
-                    alert('Error: ' + error.message);
-                });
+                .catch((error) => alert('Error: ' + error.message));
         });
 
-        // LOGIN PROCESS
         document.getElementById('login-form').addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
 
             signInWithEmailAndPassword(auth, email, password)
-                .then((userCredential) => {
+                .then(() => {
                     alert('Login Successful!');
                     window.location.href = 'home.html';
                 })
-                .catch((error) => {
-                    alert('Login Failed: ' + error.message);
-                });
+                .catch((error) => alert('Login Failed: ' + error.message));
         });
     </script>
 </body>
