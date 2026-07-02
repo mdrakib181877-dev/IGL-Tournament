@@ -47,7 +47,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getDatabase, ref, onValue, push, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, onValue, push, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
@@ -56,7 +56,7 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(auth);
+        const auth = getAuth(app);
         const database = getDatabase(app);
         let currentUser;
         let currentBalance = 0;
@@ -77,21 +77,33 @@
             e.preventDefault();
             const amount = parseInt(document.getElementById('amount').value);
             
+            // ব্যালেন্স চেক লজিক
             if(amount > currentBalance) {
-                alert("Insufficient balance!");
+                alert("Insufficient balance! Your current balance is: " + currentBalance + " BDT");
                 return;
             }
 
-            push(ref(database, 'withdraw_requests'), {
-                userId: currentUser.uid,
-                email: currentUser.email,
-                method: document.getElementById('method').value,
-                accountNumber: document.getElementById('account').value,
-                amount: amount,
-                status: 'Pending'
-            }).then(() => {
-                alert("Withdraw request submitted!");
-                window.location.href = 'home.html';
+            // ব্যালেন্স মাইনাস করা এবং রিকোয়েস্ট পাঠানো
+            runTransaction(ref(database, `users/${currentUser.uid}/balance`), (balance) => {
+                return (balance || 0) - amount;
+            }).then((result) => {
+                if (result.committed) {
+                    push(ref(database, 'withdraw_requests'), {
+                        userId: currentUser.uid,
+                        email: currentUser.email,
+                        method: document.getElementById('method').value,
+                        accountNumber: document.getElementById('account').value,
+                        amount: amount,
+                        status: 'Pending'
+                    }).then(() => {
+                        alert("Withdraw request submitted successfully!");
+                        window.location.href = 'home.html';
+                    });
+                } else {
+                    alert("Transaction failed. Please try again.");
+                }
+            }).catch(error => {
+                alert("Error: " + error.message);
             });
         });
     </script>
