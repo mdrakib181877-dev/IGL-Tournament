@@ -125,6 +125,24 @@
             background: #00ccaa;
             box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
         }
+        /* Withdraw button added */
+        .withdraw-btn {
+            background: #ff0055;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: 0.3s;
+            margin-right: 10px;
+        }
+        .withdraw-btn:hover {
+            background: #d00045;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
+        }
 
         /* 2. Categories Grid */
         .main-container {
@@ -224,6 +242,8 @@
         </div>
         <div class="wallet-box">
             <div class="balance">Balance: <span id="user-balance">0</span> BDT</div>
+            <!-- Withdraw button added here -->
+            <a href="withdraw.html" class="withdraw-btn">Withdraw</a>
             <a href="deposit.html" class="deposit-btn">Deposit Money</a>
         </div>
     </div>
