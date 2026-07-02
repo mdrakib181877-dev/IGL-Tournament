@@ -44,7 +44,6 @@
             padding: 0 20px;
         }
 
-        /* Match Category Tabs (CS, BR, Solo etc) */
         .tabs-container {
             display: flex;
             gap: 10px;
@@ -70,7 +69,6 @@
             box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
         }
 
-        /* Match Cards Styling */
         .matches-list {
             display: flex;
             flex-direction: column;
@@ -124,7 +122,6 @@
             font-weight: bold;
         }
 
-        /* 🏆 New Sub-Prize & Per Kill Layout */
         .sub-prizes {
             display: flex;
             flex-wrap: wrap;
@@ -179,7 +176,6 @@
             font-size: 18px;
         }
 
-        /* রুম আইডি প্রদর্শনের জন্য বিশেষ স্টাইল বক্স */
         .room-details-box {
             background: rgba(0, 255, 204, 0.1);
             border: 1px dashed #00ffcc;
@@ -191,7 +187,31 @@
             align-items: center;
         }
 
-        /* 🎁 PopUp Modal for Joining Match */
+        /* 👥 Joined Players Box Style */
+        .joined-players-box {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .player-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        .player-tag {
+            background: #15102a;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            color: #00ffcc;
+            border: 1px solid rgba(0, 255, 204, 0.2);
+        }
+
         .modal {
             display: none;
             position: fixed;
@@ -270,7 +290,6 @@
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
             authDomain: "igl-tournament-f788f.firebaseapp.com",
@@ -287,7 +306,6 @@
         const database = getDatabase(app);
 
         const selectedGame = localStorage.getItem('selectedGame') || 'freefire';
-        
         const gameMetaData = {
             freefire: { title: "Free Fire", modes: ["All", "CS Match", "BR Match", "Lone Wolf"] },
             pubg: { title: "PUBG Mobile", modes: ["All", "Classic BR", "TDM Arena"] },
@@ -316,15 +334,6 @@
                 return globalCategoryBanner;
             }
         }
-
-        const catSettingsRef = ref(database, `admin_settings/categories/${selectedGame}`);
-        onValue(catSettingsRef, (snapshot) => {
-            const catData = snapshot.val();
-            if(catData && catData.image) {
-                globalCategoryBanner = catData.image.trim();
-                loadMatches();
-            }
-        });
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -378,39 +387,24 @@
                         return;
                     }
 
-                    let matchCount = 0;
-
                     for (let key in matchesData) {
                         const match = matchesData[key];
-                        
-                        if (currentActiveMode !== "All" && match.mode !== currentActiveMode) {
-                            continue;
-                        }
-
-                        matchCount++;
+                        if (currentActiveMode !== "All" && match.mode !== currentActiveMode) continue;
 
                         const matchRegs = regsData[key] || {};
                         const totalJoined = Object.keys(matchRegs).length;
                         const maxSlots = match.totalSlots || 48;
 
                         let isUserJoined = false;
+                        let playerTags = "";
                         for (let regId in matchRegs) {
-                            if (matchRegs[regId].userId === currentUserId) {
-                                isUserJoined = true;
-                                break;
-                            }
+                            if (matchRegs[regId].userId === currentUserId) isUserJoined = true;
+                            playerTags += `<span class="player-tag">${matchRegs[regId].gameUid}</span>`;
                         }
 
                         const card = document.createElement('div');
                         card.className = 'match-card';
-
-                        const finalCardImage = match.logo ? getSafeImageUrl(match.logo) : getSafeImageUrl(globalCategoryBanner);
-
-                        // 🏆 মেডেল ভিত্তিক প্রাইজ এবং পার-কিল ডেটা রিড করা
-                        const p1 = match.prize1 || 0;
-                        const p2 = match.prize2 || 0;
-                        const p3 = match.prize3 || 0;
-                        const perKillAmount = match.perKill || 0; // ডেটাবেজ থেকে পার-কিল অ্যামাউন্ট আনা হচ্ছে
+                        const finalCardImage = match.logo ? getSafeImageUrl(match.logo) : globalCategoryBanner;
 
                         let cardHTML = `
                             <div class="match-main-info">
@@ -421,40 +415,33 @@
                                         <p>Type: <span class="highlight">${match.type} (${match.mode})</span></p>
                                         <p>Time: <span>${match.time}</span></p>
                                         <p>Prize Pool: <span class="highlight">${match.prize} BDT</span></p>
-                                        
-                                        <!-- 🎁 প্রাইজ বন্টন এবং পার-কিল অ্যামাউন্ট ডিসপ্লে -->
                                         <div class="sub-prizes">
-                                            <span class="p1">🥇 1st: ${p1}৳</span>
-                                            <span class="p2">🥈 2nd: ${p2}৳</span>
-                                            <span class="p3">🥉 3rd: ${p3}৳</span>
-                                            <span class="per-kill">🎯 Per Kill: ${perKillAmount}৳</span>
+                                            <span class="p1">🥇 ${match.prize1 || 0}৳</span>
+                                            <span class="p2">🥈 ${match.prize2 || 0}৳</span>
+                                            <span class="p3">🥉 ${match.prize3 || 0}৳</span>
+                                            <span class="per-kill">🎯 ${match.perKill || 0}৳</span>
                                         </div>
-
-                                        <p style="margin-top:6px;">Slots Available: <span style="color:#ffcc00; font-weight:bold;">${totalJoined} / ${maxSlots}</span></p>
                                     </div>
                                 </div>
                                 <div class="match-action">
                                     <p style="margin-bottom:8px; font-weight:bold;">Fee: <span style="color:#00ffcc;">${match.entryFee} BDT</span></p>
-                        `;
-
-                        if (isUserJoined) {
-                            cardHTML += `<button class="join-btn" disabled style="background:#00ffcc; color:#000; font-weight:bold;">Joined</button>`;
-                        } else if (totalJoined >= maxSlots) {
-                            cardHTML += `<button class="join-btn" disabled>Slot Full</button>`;
-                        } else {
-                            cardHTML += `<button class="join-btn trigger-join" data-id="${key}" data-title="${match.title}" data-fee="${match.entryFee}">Join</button>`;
-                        }
-
-                        cardHTML += `
+                                    ${isUserJoined ? `<button class="join-btn" disabled style="background:#00ffcc; color:#000;">Joined</button>` : 
+                                      (totalJoined >= maxSlots ? `<button class="join-btn" disabled>Full</button>` : 
+                                      `<button class="join-btn trigger-join" data-id="${key}" data-title="${match.title}" data-fee="${match.entryFee}">Join</button>`)}
                                 </div>
+                            </div>
+                            
+                            <div class="joined-players-box">
+                                <p style="font-size: 13px; color: #fff;">👥 Joined: <b>${totalJoined} / ${maxSlots}</b></p>
+                                <div class="player-list">${playerTags}</div>
                             </div>
                         `;
 
                         if (isUserJoined) {
                             cardHTML += `
-                                <div class="room-details-box">
-                                    <div>🔑 <strong style="color:#fff;">Room ID:</strong> <span style="color:#00ffcc; font-family:monospace; font-size:16px; margin-left:5px;">${match.roomId || 'Waiting...'}</span></div>
-                                    <div>🔐 <strong style="color:#fff;">Password:</strong> <span style="color:#00ffcc; font-family:monospace; font-size:16px; margin-left:5px;">${match.roomPass || 'Waiting...'}</span></div>
+                                <div class="room-details-box" style="margin-top:10px;">
+                                    <div>🔑 <strong>Room:</strong> ${match.roomId || 'Waiting'}</div>
+                                    <div>🔐 <strong>Pass:</strong> ${match.roomPass || 'Waiting'}</div>
                                 </div>
                             `;
                         }
@@ -463,18 +450,11 @@
                         displayZone.appendChild(card);
                     }
 
-                    if (matchCount === 0) {
-                        displayZone.innerHTML = '<div class="no-matches">No active match found for this category.</div>';
-                    } else {
-                        document.querySelectorAll('.trigger-join').forEach(btn => {
-                            btn.onclick = function() {
-                                const mId = this.getAttribute('data-id');
-                                const mTitle = this.getAttribute('data-title');
-                                const mFee = parseInt(this.getAttribute('data-fee'));
-                                openJoinModal(mId, mTitle, mFee);
-                            };
-                        });
-                    }
+                    document.querySelectorAll('.trigger-join').forEach(btn => {
+                        btn.onclick = function() {
+                            openJoinModal(this.getAttribute('data-id'), this.getAttribute('data-title'), parseInt(this.getAttribute('data-fee')));
+                        };
+                    });
                 });
             });
         }
@@ -487,44 +467,22 @@
             document.getElementById('joinModal').style.display = 'flex';
         }
 
-        document.getElementById('closeModalBtn').onclick = () => {
-            document.getElementById('joinModal').style.display = 'none';
-        };
+        document.getElementById('closeModalBtn').onclick = () => document.getElementById('joinModal').style.display = 'none';
 
         document.getElementById('join-match-form').addEventListener('submit', async (e) => {
             e.preventDefault();
             const playerUID = document.getElementById('player-uid').value.trim();
-
             if (userWalletBalance < selectedMatchFee) {
-                alert("Insufficient balance! Please deposit money first. (আপনার ব্যালেন্স পর্যাপ্ত নয়, দয়া করে ডিপোজিট করুন)");
+                alert("Insufficient balance!");
                 window.location.href = 'deposit.html';
                 return;
             }
-
             try {
-                const newBalance = userWalletBalance - selectedMatchFee;
-                const userUpdate = {};
-                userUpdate[`users/${currentUserId}/balance`] = newBalance;
-                await update(ref(database), userUpdate);
-
-                const registrationRef = ref(database, `match_registrations/${selectedGame}/${selectedMatchId}`);
-                const newRegKey = push(registrationRef).key;
-                
-                const regData = {};
-                regData[`match_registrations/${selectedGame}/${selectedMatchId}/${newRegKey}`] = {
-                    userId: currentUserId,
-                    gameUid: playerUID,
-                    timestamp: new Date().toISOString()
-                };
-                await update(ref(database), regData);
-
-                alert("Successfully joined the tournament! Best of luck. (টুর্নামেন্টে জয়েনিং সফল হয়েছে!)");
+                await update(ref(database), { [`users/${currentUserId}/balance`]: userWalletBalance - selectedMatchFee });
+                await update(ref(database), { [`match_registrations/${selectedGame}/${selectedMatchId}/${push(ref(database)).key}`]: { userId: currentUserId, gameUid: playerUID, timestamp: new Date().toISOString() } });
+                alert("Successfully joined!");
                 document.getElementById('joinModal').style.display = 'none';
-                document.getElementById('player-uid').value = "";
-                
-            } catch (error) {
-                alert("Transaction failed: " + error.message);
-            }
+            } catch (error) { alert("Error: " + error.message); }
         });
     </script>
 </body>
