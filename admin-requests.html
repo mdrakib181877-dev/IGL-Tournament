@@ -6,73 +6,32 @@
     <title>Manage Requests - RB Admin</title>
     <style>
         /* Modern Cyberpunk Admin Theme */
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: #0b0914; color: #ffffff; display: flex; min-height: 100vh; }
         
-        /* Sidebar Styling */
-        .sidebar {
-            width: 260px; background: #120e24; padding: 30px 20px;
-            border-right: 1px solid rgba(255, 0, 85, 0.2); display: flex; flex-direction: column; justify-content: space-between;
-        }
+        .sidebar { width: 260px; background: #120e24; padding: 30px 20px; border-right: 1px solid rgba(255, 0, 85, 0.2); display: flex; flex-direction: column; justify-content: space-between; }
         .sidebar h2 { color: #ff0055; font-size: 20px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 40px; text-align: center; }
-        .sidebar menu a {
-            display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; transition: 0.3s;
-        }
+        .sidebar menu a { display: block; color: #aaa; text-decoration: none; padding: 12px 15px; border-radius: 6px; margin-bottom: 10px; font-weight: bold; transition: 0.3s; }
         .sidebar menu a.active, .sidebar menu a:hover { background: rgba(255, 0, 85, 0.1); color: #ff0055; border-left: 4px solid #ff0055; }
         .logout-btn { background: #ff0055; color: #fff; text-align: center; padding: 10px; border-radius: 6px; text-decoration: none; font-weight: bold; }
         
-        /* Main Content Panel */
         .main-content { flex: 1; padding: 40px; overflow-y: auto; }
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 20px; margin-bottom: 30px; }
         .header h1 { font-size: 26px; color: #ff0055; }
 
-        /* Request Table Styling */
-        .table-container {
-            background: #120e24;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            padding: 20px;
-            overflow-x: auto;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-        }
-        .table-container h3 {
-            color: #00ffcc; margin-bottom: 20px; font-size: 18px; text-transform: uppercase;
-        }
-        table {
-            width: 100%; border-collapse: collapse; text-align: left; font-size: 14px;
-        }
-        th, td {
-            padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        th {
-            color: #ff0055; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px;
-        }
-        tr:hover { background: rgba(255,255,255,0.02); }
+        .table-container { background: #120e24; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 20px; margin-bottom: 30px; overflow-x: auto; }
+        .table-container h3 { color: #00ffcc; margin-bottom: 20px; font-size: 18px; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        th, td { padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        th { color: #ff0055; text-transform: uppercase; font-size: 12px; }
         
-        /* Status Badges & Buttons */
-        .badge {
-            padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase;
-        }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
         .badge.pending { background: rgba(255, 165, 0, 0.15); color: #ffa500; border: 1px solid #ffa500; }
         .badge.approved { background: rgba(0, 255, 204, 0.15); color: #00ffcc; border: 1px solid #00ffcc; }
         .badge.rejected { background: rgba(255, 0, 85, 0.15); color: #ff0055; border: 1px solid #ff0055; }
         
-        .action-flex { display: flex; gap: 6px; }
-        
-        .approve-btn {
-            background: #00ffcc; color: #0b0914; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 12px;
-        }
-        .approve-btn:hover:not(:disabled) { background: #00ccaa; box-shadow: 0 0 10px rgba(0,255,204,0.4); }
-        .approve-btn:disabled { background: #222; color: #555; cursor: not-allowed; box-shadow: none; }
-
-        .reject-btn {
-            background: #ff0055; color: #fff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 12px;
-        }
-        .reject-btn:hover:not(:disabled) { background: #d00045; box-shadow: 0 0 10px rgba(255,0,85,0.4); }
-        .reject-btn:disabled { display: none; } /* অপশনটি অলরেডি অ্যাকশন হয়ে গেলে রিজেক্ট বাটন হাইড হয়ে যাবে */
+        .approve-btn { background: #00ffcc; color: #0b0914; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .reject-btn { background: #ff0055; color: #fff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -90,29 +49,22 @@
 
     <div class="main-content">
         <div class="header">
-            <h1>Deposit Requests Management</h1>
-            <div style="color: #00ffcc; font-weight: bold;">Realtime Synchronized</div>
+            <h1>Requests Management</h1>
         </div>
 
         <div class="table-container">
-            <h3>Incoming Manual Deposits</h3>
+            <h3>Deposit Requests</h3>
             <table>
-                <thead>
-                    <tr>
-                        <th>User Email</th>
-                        <th>Method</th>
-                        <th>Amount (BDT)</th>
-                        <th>Sender Number</th>
-                        <th>Transaction ID (TxID)</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                </thead>
-                <tbody id="deposit-requests-table">
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: #aaa; padding: 30px;">Loading requests...</td>
-                    </tr>
-                </tbody>
+                <thead><tr><th>Email</th><th>Method</th><th>Amount</th><th>Number</th><th>TxID</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody id="deposit-requests-table"></tbody>
+            </table>
+        </div>
+
+        <div class="table-container">
+            <h3>Withdraw Requests</h3>
+            <table>
+                <thead><tr><th>Email</th><th>Method</th><th>Amount</th><th>Number</th><th>Status</th><th>Action</th></tr></thead>
+                <tbody id="withdraw-requests-table"></tbody>
             </table>
         </div>
     </div>
@@ -122,131 +74,54 @@
         import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue, update, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
-            authDomain: "igl-tournament-f788f.firebaseapp.com",
             databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
-            projectId: "igl-tournament-f788f",
-            storageBucket: "igl-tournament-f788f.firebasestorage.app",
-            messagingSenderId: "636254933423",
-            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
-            measurementId: "G-9EL1JQM2E4"
+            projectId: "igl-tournament-f788f"
         };
 
         const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
         const database = getDatabase(app);
+        const auth = getAuth(app);
 
-        // Simple Session Gateway Security Guard
-        if(localStorage.getItem('rbAdminSession') !== 'active') {
-            window.location.href = 'admin-login.html';
-        }
-
-        // Fetch and Display Deposit Requests in Realtime
-        const requestsTableBody = document.getElementById('deposit-requests-table');
-        const depositRequestsRef = ref(database, 'deposit_requests');
-
-        onValue(depositRequestsRef, (snapshot) => {
+        // Load Deposits
+        onValue(ref(database, 'deposit_requests'), (snapshot) => {
             const data = snapshot.val();
-            requestsTableBody.innerHTML = ''; // Clear previous items
-
-            if (!data) {
-                requestsTableBody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: #aaa; padding: 30px;">No deposit requests found.</td></tr>`;
-                return;
+            const body = document.getElementById('deposit-requests-table');
+            body.innerHTML = '';
+            for(let id in data) {
+                let req = data[id];
+                body.innerHTML += `<tr><td>${req.email}</td><td>${req.method}</td><td>${req.amount}</td><td>${req.sender}</td><td>${req.trxid}</td>
+                <td><span class="badge ${req.status.toLowerCase()}">${req.status}</span></td>
+                <td>${req.status === 'Pending' ? `<button class="approve-btn" onclick="approveDeposit('${id}','${req.userId}',${req.amount})">Approve</button>` : ''}</td></tr>`;
             }
-
-            // Loop through all incoming database request nodes
-            Object.keys(data).forEach((key) => {
-                const request = data[key];
-                const tr = document.createElement('tr');
-
-                const statusClass = request.status ? request.status.toLowerCase() : 'pending';
-                const isProcessed = request.status === "Approved" || request.status === "Rejected";
-                const isApproved = request.status === "Approved";
-
-                tr.innerHTML = `
-                    <td>${request.email}</td>
-                    <td><span style="font-weight: bold; color: ${request.method === 'Bkash' ? '#e2136e' : request.method === 'Nagad' ? '#ff6000' : '#8c3494'}">${request.method}</span></td>
-                    <td style="font-weight: bold; color: #00ffcc;">${request.amount} BDT</td>
-                    <td>${request.sender}</td>
-                    <td style="font-family: monospace; letter-spacing: 0.5px;">${request.trxid}</td>
-                    <td><span class="badge ${statusClass}">${request.status || 'Pending'}</span></td>
-                    <td>
-                        <div class="action-flex">
-                            <button class="approve-btn" data-id="${key}" data-user="${request.userId}" data-amount="${request.amount}" ${isProcessed ? 'disabled' : ''}>
-                                ${isApproved ? 'Approved ✓' : isProcessed ? 'Processed' : 'Approve'}
-                            </button>
-                            <button class="reject-btn" data-id="${key}" ${isProcessed ? 'disabled' : ''}>
-                                Reject
-                            </button>
-                        </div>
-                    </td>
-                `;
-                requestsTableBody.appendChild(tr);
-            });
-
-            // Bind Event Listeners to Approve Buttons
-            document.querySelectorAll('.approve-btn').forEach(btn => {
-                btn.onclick = function() {
-                    const requestId = this.getAttribute('data-id');
-                    const targetUserId = this.getAttribute('data-user');
-                    const depositAmount = parseInt(this.getAttribute('data-amount'));
-
-                    approveUserDeposit(requestId, targetUserId, depositAmount);
-                };
-            });
-
-            // Bind Event Listeners to Reject Buttons
-            document.querySelectorAll('.reject-btn').forEach(btn => {
-                btn.onclick = function() {
-                    const requestId = this.getAttribute('data-id');
-                    rejectUserDeposit(requestId);
-                };
-            });
         });
 
-        // Safe Transactional Balance Injection Routine
-        function approveUserDeposit(requestId, userId, amount) {
-            if(!confirm(`Are you sure you want to approve this request and add ${amount} BDT to this user's account?`)) return;
+        // Load Withdraws
+        onValue(ref(database, 'withdraw_requests'), (snapshot) => {
+            const data = snapshot.val();
+            const body = document.getElementById('withdraw-requests-table');
+            body.innerHTML = '';
+            for(let id in data) {
+                let req = data[id];
+                body.innerHTML += `<tr><td>${req.email}</td><td>${req.method}</td><td>${req.amount}</td><td>${req.accountNumber}</td>
+                <td><span class="badge ${req.status.toLowerCase()}">${req.status}</span></td>
+                <td>${req.status === 'Pending' ? `<button class="approve-btn" onclick="approveWithdraw('${id}')">Complete</button>` : ''}</td></tr>`;
+            }
+        });
 
-            const userBalanceRef = ref(database, `users/${userId}/balance`);
+        window.approveDeposit = (id, userId, amount) => {
+            runTransaction(ref(database, `users/${userId}/balance`), (b) => (b || 0) + amount);
+            update(ref(database, `deposit_requests/${id}`), { status: 'Approved' });
+        };
 
-            runTransaction(userBalanceRef, (currentBalance) => {
-                return (currentBalance || 0) + amount;
-            })
-            .then(() => {
-                update(ref(database, `deposit_requests/${requestId}`), {
-                    status: "Approved"
-                }).then(() => {
-                    alert("Deposit Approved! Balance successfully synchronized and added to user account.");
-                });
-            })
-            .catch((error) => {
-                alert("Transaction processing crashed: " + error.message);
-            });
-        }
+        window.approveWithdraw = (id) => {
+            update(ref(database, `withdraw_requests/${id}`), { status: 'Approved' });
+            alert("Withdrawal marked as completed!");
+        };
 
-        // Reject Deposit Function (No Balance Update, Just Status Changes to Rejected)
-        function rejectUserDeposit(requestId) {
-            if(!confirm("Are you sure you want to REJECT this deposit request?")) return;
-
-            update(ref(database, `deposit_requests/${requestId}`), {
-                status: "Rejected"
-            }).then(() => {
-                alert("Deposit request has been Rejected.");
-            }).catch((error) => {
-                alert("Error rejecting request: " + error.message);
-            });
-        }
-
-        // Admin Security Log Out Procedure
-        document.getElementById('admin-logout').addEventListener('click', (e) => {
-            e.preventDefault();
-            signOut(auth).then(() => {
-                localStorage.removeItem('rbAdminSession');
-                window.location.href = 'admin-login.html';
-            });
+        document.getElementById('admin-logout').addEventListener('click', () => {
+            signOut(auth).then(() => window.location.href = 'admin-login.html');
         });
     </script>
 </body>
