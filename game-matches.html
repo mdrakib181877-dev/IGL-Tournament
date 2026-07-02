@@ -6,484 +6,127 @@
     <title>Tournaments - RB Tournament Zone</title>
     <style>
         /* Gamer Dark Theme Styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background: #0f0c20;
-            color: #ffffff;
-            padding-bottom: 50px;
-        }
-        header {
-            background: rgba(255, 255, 255, 0.03);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .back-btn {
-            color: #00ffcc;
-            text-decoration: none;
-            font-weight: bold;
-            font-size: 16px;
-        }
-        .game-title {
-            color: #fff;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-size: 24px;
-        }
-        
-        .container {
-            max-width: 1000px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        .tabs-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-        }
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.05);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: bold;
-            white-space: nowrap;
-            transition: 0.3s;
-        }
-        .tab-btn.active, .tab-btn:hover {
-            background: #00ffcc;
-            color: #0f0c20;
-            border-color: #00ffcc;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.3);
-        }
-
-        .matches-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .match-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            transition: 0.3s;
-        }
-        .match-main-info {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-        .match-card:hover {
-            border-color: #ff0055;
-            background: rgba(255, 255, 255, 0.05);
-        }
-        .match-details {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .match-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            object-fit: cover;
-            background: #15102a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .info h3 {
-            color: #fff;
-            margin-bottom: 5px;
-            font-size: 18px;
-        }
-        .info p {
-            color: #aaa;
-            font-size: 14px;
-            margin-bottom: 3px;
-        }
-        .info .highlight {
-            color: #00ffcc;
-            font-weight: bold;
-        }
-
-        .sub-prizes {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin-top: 6px;
-            font-size: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 6px 10px;
-            border-radius: 6px;
-            width: max-content;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .sub-prizes span { font-weight: 500; }
-        .p1 { color: #ffcc00; }
-        .p2 { color: #dfdfdf; }
-        .p3 { color: #cd7f32; }
-        .per-kill { 
-            color: #ff0055; 
-            border-left: 1px solid rgba(255, 255, 255, 0.2); 
-            padding-left: 10px;
-            font-weight: bold !important;
-        }
-
-        .match-action {
-            text-align: right;
-        }
-        .join-btn {
-            background: #ff0055;
-            color: #fff;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            text-transform: uppercase;
-        }
-        .join-btn:hover {
-            background: #d00045;
-            box-shadow: 0 0 15px rgba(255, 0, 85, 0.5);
-        }
-        .join-btn:disabled {
-            background: #332a45;
-            color: #888;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-        .no-matches {
-            text-align: center;
-            color: #888;
-            padding: 40px;
-            font-size: 18px;
-        }
-
-        .room-details-box {
-            background: rgba(0, 255, 204, 0.1);
-            border: 1px dashed #00ffcc;
-            padding: 12px;
-            border-radius: 8px;
-            width: 100%;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
-
-        /* 👥 Joined Players Box Style */
-        .joined-players-box {
-            margin-top: 15px;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .player-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 10px;
-            max-height: 100px;
-            overflow-y: auto;
-        }
-        .player-tag {
-            background: #15102a;
-            padding: 4px 10px;
-            border-radius: 15px;
-            font-size: 11px;
-            color: #00ffcc;
-            border: 1px solid rgba(0, 255, 204, 0.2);
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 20px;
-        }
-        .modal-content {
-            background: #15102a;
-            border: 1px solid #00ffcc;
-            padding: 30px;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 400px;
-            position: relative;
-        }
-        .close-modal {
-            position: absolute;
-            top: 15px; right: 20px;
-            color: #aaa; font-size: 24px; cursor: pointer;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0f0c20; color: #ffffff; padding-bottom: 50px; }
+        header { background: rgba(255, 255, 255, 0.03); border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { color: #00ffcc; text-decoration: none; font-weight: bold; font-size: 16px; }
+        .game-title { color: #fff; text-transform: uppercase; letter-spacing: 2px; font-size: 24px; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+        .tabs-container { display: flex; gap: 10px; margin-bottom: 30px; overflow-x: auto; padding-bottom: 10px; }
+        .tab-btn { background: rgba(255, 255, 255, 0.05); color: #fff; border: 1px solid rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold; white-space: nowrap; transition: 0.3s; }
+        .tab-btn.active, .tab-btn:hover { background: #00ffcc; color: #0f0c20; border-color: #00ffcc; box-shadow: 0 0 10px rgba(0, 255, 204, 0.3); }
+        .matches-list { display: flex; flex-direction: column; gap: 20px; }
+        .match-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 15px; transition: 0.3s; cursor: pointer; }
+        .match-card:hover { border-color: #ff0055; background: rgba(255, 255, 255, 0.05); }
+        .match-main-info { display: flex; align-items: center; justify-content: space-between; width: 100%; pointer-events: none; }
+        .match-details { display: flex; align-items: center; gap: 20px; }
+        .match-logo { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; background: #15102a; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .info h3 { color: #fff; margin-bottom: 5px; font-size: 18px; }
+        .info p { color: #aaa; font-size: 14px; margin-bottom: 3px; }
+        .info .highlight { color: #00ffcc; font-weight: bold; }
+        .sub-prizes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; font-size: 12px; background: rgba(0, 0, 0, 0.2); padding: 6px 10px; border-radius: 6px; width: max-content; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .p1 { color: #ffcc00; } .p2 { color: #dfdfdf; } .p3 { color: #cd7f32; }
+        .per-kill { color: #ff0055; border-left: 1px solid rgba(255, 255, 255, 0.2); padding-left: 10px; font-weight: bold !important; }
+        .match-action { text-align: right; pointer-events: auto; }
+        .join-btn { background: #ff0055; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .join-btn:hover { background: #d00045; box-shadow: 0 0 15px rgba(255, 0, 85, 0.5); }
+        .join-btn:disabled { background: #332a45; color: #888; cursor: not-allowed; box-shadow: none; }
+        .no-matches { text-align: center; color: #888; padding: 40px; font-size: 18px; }
+        .room-details-box { background: rgba(0, 255, 204, 0.1); border: 1px dashed #00ffcc; padding: 12px; border-radius: 8px; width: 100%; display: flex; justify-content: space-around; align-items: center; }
+        .collapsible-content { display: none; margin-top: 10px; }
+        .joined-players-box { margin-top: 15px; padding: 12px; background: rgba(0, 0, 0, 0.2); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .player-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; max-height: 100px; overflow-y: auto; }
+        .player-tag { background: #15102a; padding: 4px 10px; border-radius: 15px; font-size: 11px; color: #00ffcc; border: 1px solid rgba(0, 255, 204, 0.2); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); justify-content: center; align-items: center; z-index: 1000; padding: 20px; }
+        .modal-content { background: #15102a; border: 1px solid #00ffcc; padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; position: relative; }
+        .close-modal { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 24px; cursor: pointer; }
         .close-modal:hover { color: #fff; }
         .modal h3 { color: #00ffcc; margin-bottom: 20px; text-align: center; }
-        .modal label { display: block; margin-bottom: 8px; color: #aaa; font-size: 14px;}
-        .modal input {
-            width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px;
-            color: #fff; margin-bottom: 20px; font-size: 16px;
-        }
-        .modal input:focus { outline: none; border-color: #00ffcc; }
-        .confirm-btn {
-            width: 100%; padding: 12px; background: #00ffcc; color: #0f0c20;
-            border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 16px;
-        }
-        .confirm-btn:hover { background: #00ccaa; }
+        .modal input { width: 100%; padding: 12px; background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 6px; color: #fff; margin-bottom: 20px; font-size: 16px; }
+        .confirm-btn { width: 100%; padding: 12px; background: #00ffcc; color: #0f0c20; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
-
     <header>
         <a href="home.html" class="back-btn">← Back to Home</a>
         <div class="game-title" id="current-game-title">Loading Game...</div>
         <div style="color: #00ffcc; font-weight: bold;">Balance: <span id="header-balance">0</span> BDT</div>
     </header>
-
     <div class="container">
-        <div class="tabs-container" id="match-tabs">
-        </div>
-
+        <div class="tabs-container" id="match-tabs"></div>
         <h2 style="margin-bottom: 20px; font-size: 20px; border-left: 4px solid #ff0055; padding-left: 10px;">Available Matches</h2>
-        <div class="matches-list" id="matches-display">
-            <div class="no-matches">Fetching live tournaments...</div>
-        </div>
+        <div class="matches-list" id="matches-display"></div>
     </div>
-
     <div class="modal" id="joinModal">
         <div class="modal-content">
             <span class="close-modal" id="closeModalBtn">&times;</span>
             <h3 id="modal-match-title">Join Tournament</h3>
             <p style="text-align: center; margin-bottom: 15px; color: #ff0055; font-weight: bold;">Entry Fee: <span id="modal-entry-fee">0</span> BDT</p>
-            
             <form id="join-match-form">
-                <label for="player-uid">In-Game Name / UID (আইডি বা নাম):</label>
-                <input type="text" id="player-uid" placeholder="Example: RB_Gamer99 or 5839201" required>
-                
+                <label for="player-uid">In-Game Name / UID:</label>
+                <input type="text" id="player-uid" required>
                 <button type="submit" class="confirm-btn">Confirm & Join</button>
             </form>
         </div>
     </div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
-            authDomain: "igl-tournament-f788f.firebaseapp.com",
-            databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com",
-            projectId: "igl-tournament-f788f",
-            storageBucket: "igl-tournament-f788f.firebasestorage.app",
-            messagingSenderId: "636254933423",
-            appId: "1:636254933423:web:92a000034601d5e20b9f5a",
-            measurementId: "G-9EL1JQM2E4"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-
+        const app = initializeApp({ apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA", authDomain: "igl-tournament-f788f.firebaseapp.com", databaseURL: "https://igl-tournament-f788f-default-rtdb.firebaseio.com", projectId: "igl-tournament-f788f", storageBucket: "igl-tournament-f788f.firebasestorage.app", messagingSenderId: "636254933423", appId: "1:636254933423:web:92a000034601d5e20b9f5a" });
+        const auth = getAuth(app), database = getDatabase(app);
         const selectedGame = localStorage.getItem('selectedGame') || 'freefire';
-        const gameMetaData = {
-            freefire: { title: "Free Fire", modes: ["All", "CS Match", "BR Match", "Lone Wolf"] },
-            pubg: { title: "PUBG Mobile", modes: ["All", "Classic BR", "TDM Arena"] },
-            ludo: { title: "Ludo", modes: ["All", "Solo Match", "4-Player"] },
-            efootball: { title: "eFootball", modes: ["All", "Solo Match"] }
-        };
-
-        document.getElementById('current-game-title').innerText = gameMetaData[selectedGame].title;
-
-        let currentActiveMode = "All";
-        let userWalletBalance = 0;
-        let currentUserId = null;
-        let selectedMatchId = null;
-        let selectedMatchFee = 0;
-        let globalCategoryBanner = 'https://placehold.co/100x100?text=Match'; 
-
-        function getSafeImageUrl(inputUrl) {
-            if(!inputUrl) return globalCategoryBanner;
-            try {
-                let cleanUrl = inputUrl.trim();
-                if (cleanUrl.toLowerCase().startsWith("http")) {
-                    cleanUrl = "https://" + cleanUrl.substring(cleanUrl.indexOf("//") + 2);
-                }
-                return encodeURI(cleanUrl);
-            } catch (e) {
-                return globalCategoryBanner;
-            }
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                currentUserId = user.uid;
-                onValue(ref(database, 'users/' + user.uid), (snapshot) => {
-                    const data = snapshot.val();
-                    if(data) {
-                        userWalletBalance = data.balance || 0;
-                        document.getElementById('header-balance').innerText = userWalletBalance;
-                    }
-                });
-                loadTabs();
-                loadMatches();
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
-
-        function loadTabs() {
-            const tabsBox = document.getElementById('match-tabs');
-            tabsBox.innerHTML = "";
-            gameMetaData[selectedGame].modes.forEach(mode => {
-                const btn = document.createElement('button');
-                btn.className = `tab-btn ${mode === currentActiveMode ? 'active' : ''}`;
-                btn.innerText = mode;
-                btn.onclick = () => {
-                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentActiveMode = mode;
-                    loadMatches();
-                };
-                tabsBox.appendChild(btn);
-            });
-        }
-
+        let currentUserId = null, selectedMatchId = null, selectedMatchFee = 0;
+        onAuthStateChanged(auth, (u) => { if(u) { currentUserId = u.uid; loadMatches(); } });
+        
         function loadMatches() {
-            const displayZone = document.getElementById('matches-display');
-            displayZone.innerHTML = '<div class="no-matches">Searching for live tournaments...</div>';
-
-            const matchesRef = ref(database, 'matches/' + selectedGame);
-            const registrationsRef = ref(database, `match_registrations/${selectedGame}`);
-
-            onValue(matchesRef, (matchSnapshot) => {
-                onValue(registrationsRef, (regSnapshot) => {
-                    displayZone.innerHTML = "";
-                    const matchesData = matchSnapshot.val();
-                    const regsData = regSnapshot.val() || {};
-
-                    if (!matchesData) {
-                        displayZone.innerHTML = '<div class="no-matches">No matches available right now!</div>';
-                        return;
-                    }
-
-                    for (let key in matchesData) {
-                        const match = matchesData[key];
-                        if (currentActiveMode !== "All" && match.mode !== currentActiveMode) continue;
-
-                        const matchRegs = regsData[key] || {};
-                        const totalJoined = Object.keys(matchRegs).length;
-                        const maxSlots = match.totalSlots || 48;
-
-                        let isUserJoined = false;
-                        let playerTags = "";
-                        for (let regId in matchRegs) {
-                            if (matchRegs[regId].userId === currentUserId) isUserJoined = true;
-                            playerTags += `<span class="player-tag">${matchRegs[regId].gameUid}</span>`;
-                        }
-
-                        const card = document.createElement('div');
-                        card.className = 'match-card';
-                        const finalCardImage = match.logo ? getSafeImageUrl(match.logo) : globalCategoryBanner;
-
-                        let cardHTML = `
-                            <div class="match-main-info">
-                                <div class="match-details">
-                                    <img class="match-logo" src="${finalCardImage}" alt="Logo">
-                                    <div class="info">
-                                        <h3>${match.title}</h3>
-                                        <p>Type: <span class="highlight">${match.type} (${match.mode})</span></p>
-                                        <p>Time: <span>${match.time}</span></p>
-                                        <p>Prize Pool: <span class="highlight">${match.prize} BDT</span></p>
-                                        <div class="sub-prizes">
-                                            <span class="p1">🥇 ${match.prize1 || 0}৳</span>
-                                            <span class="p2">🥈 ${match.prize2 || 0}৳</span>
-                                            <span class="p3">🥉 ${match.prize3 || 0}৳</span>
-                                            <span class="per-kill">🎯 ${match.perKill || 0}৳</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="match-action">
-                                    <p style="margin-bottom:8px; font-weight:bold;">Fee: <span style="color:#00ffcc;">${match.entryFee} BDT</span></p>
-                                    ${isUserJoined ? `<button class="join-btn" disabled style="background:#00ffcc; color:#000;">Joined</button>` : 
-                                      (totalJoined >= maxSlots ? `<button class="join-btn" disabled>Full</button>` : 
-                                      `<button class="join-btn trigger-join" data-id="${key}" data-title="${match.title}" data-fee="${match.entryFee}">Join</button>`)}
-                                </div>
+            onValue(ref(database, 'matches/' + selectedGame), (snap) => {
+                const matches = snap.val();
+                const displayZone = document.getElementById('matches-display');
+                displayZone.innerHTML = "";
+                for (let key in matches) {
+                    const match = matches[key];
+                    const card = document.createElement('div');
+                    card.className = 'match-card';
+                    card.onclick = (e) => { if(!e.target.classList.contains('join-btn')) { 
+                        const c = card.querySelector('.collapsible-content'); 
+                        c.style.display = c.style.display === 'block' ? 'none' : 'block'; 
+                    }};
+                    card.innerHTML = `
+                        <div class="match-main-info">
+                            <div class="match-details">
+                                <img class="match-logo" src="${match.logo || 'https://placehold.co/80x80'}">
+                                <div><h3>${match.title}</h3><p>Time: ${match.time}</p></div>
                             </div>
-                            
+                            <div class="match-action">Fee: ${match.entryFee} BDT</div>
+                        </div>
+                        <div class="collapsible-content">
                             <div class="joined-players-box">
-                                <p style="font-size: 13px; color: #fff;">👥 Joined: <b>${totalJoined} / ${maxSlots}</b></p>
-                                <div class="player-list">${playerTags}</div>
+                                <p>👥 Joined Players:</p>
+                                <div class="player-list" id="list-${key}"></div>
                             </div>
-                        `;
-
-                        if (isUserJoined) {
-                            cardHTML += `
-                                <div class="room-details-box" style="margin-top:10px;">
-                                    <div>🔑 <strong>Room:</strong> ${match.roomId || 'Waiting'}</div>
-                                    <div>🔐 <strong>Pass:</strong> ${match.roomPass || 'Waiting'}</div>
-                                </div>
-                            `;
-                        }
-
-                        card.innerHTML = cardHTML;
-                        displayZone.appendChild(card);
-                    }
-
-                    document.querySelectorAll('.trigger-join').forEach(btn => {
-                        btn.onclick = function() {
-                            openJoinModal(this.getAttribute('data-id'), this.getAttribute('data-title'), parseInt(this.getAttribute('data-fee')));
-                        };
+                            <button class="join-btn" onclick="openJoinModal('${key}', '${match.title}', ${match.entryFee})">JOIN MATCH</button>
+                        </div>
+                    `;
+                    displayZone.appendChild(card);
+                    onValue(ref(database, `match_registrations/${selectedGame}/${key}`), (rSnap) => {
+                        const regs = rSnap.val() || {};
+                        card.querySelector(`#list-${key}`).innerHTML = Object.values(regs).map(r => `<span class="player-tag">${r.gameUid}</span>`).join('');
                     });
-                });
+                }
             });
         }
-
-        function openJoinModal(matchId, matchTitle, entryFee) {
-            selectedMatchId = matchId;
-            selectedMatchFee = entryFee;
-            document.getElementById('modal-match-title').innerText = "Join: " + matchTitle;
-            document.getElementById('modal-entry-fee').innerText = entryFee;
+        window.openJoinModal = (id, title, fee) => {
+            selectedMatchId = id; selectedMatchFee = fee;
+            document.getElementById('modal-match-title').innerText = "Join: " + title;
             document.getElementById('joinModal').style.display = 'flex';
-        }
-
+        };
         document.getElementById('closeModalBtn').onclick = () => document.getElementById('joinModal').style.display = 'none';
-
-        document.getElementById('join-match-form').addEventListener('submit', async (e) => {
+        document.getElementById('join-match-form').onsubmit = async (e) => {
             e.preventDefault();
-            const playerUID = document.getElementById('player-uid').value.trim();
-            if (userWalletBalance < selectedMatchFee) {
-                alert("Insufficient balance!");
-                window.location.href = 'deposit.html';
-                return;
-            }
-            try {
-                await update(ref(database), { [`users/${currentUserId}/balance`]: userWalletBalance - selectedMatchFee });
-                await update(ref(database), { [`match_registrations/${selectedGame}/${selectedMatchId}/${push(ref(database)).key}`]: { userId: currentUserId, gameUid: playerUID, timestamp: new Date().toISOString() } });
-                alert("Successfully joined!");
-                document.getElementById('joinModal').style.display = 'none';
-            } catch (error) { alert("Error: " + error.message); }
-        });
+            await update(ref(database), { [`match_registrations/${selectedGame}/${selectedMatchId}/${push(ref(database)).key}`]: { userId: currentUserId, gameUid: document.getElementById('player-uid').value } });
+            alert("Joined!"); document.getElementById('joinModal').style.display = 'none';
+        };
     </script>
 </body>
 </html>
