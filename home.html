@@ -162,7 +162,7 @@
             width: 100%;
             height: 180px;
             object-fit: cover;
-            background: #1a1535; /* Fallback background */
+            background: #1a1535;
         }
         .game-card h3 {
             padding: 15px 0;
@@ -262,12 +262,21 @@
         </a>
     </div>
 
+    <!-- Home Popup -->
+    <div id="home-popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.85); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:#15102a; border:2px solid #00ffcc; padding:25px; border-radius:15px; width:90%; max-width:350px; text-align:center;">
+            <h2 style="color:#00ffcc;">Important Update</h2>
+            <p style="color:#fff; margin:15px 0;">Stay updated with our latest tournaments and matches! Join our community.</p>
+            <a href="https://t.me/your_telegram_channel" style="background:#0088cc; color:#fff; display:block; padding:12px; text-decoration:none; border-radius:8px; margin-bottom:10px; font-weight:bold;">Join Telegram</a>
+            <button onclick="document.getElementById('home-popup').style.display='none'" style="background:transparent; border:1px solid #ff0055; color:#ff0055; padding:8px 20px; cursor:pointer; border-radius:5px; margin-top:10px;">Close</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
             authDomain: "igl-tournament-f788f.firebaseapp.com",
@@ -279,12 +288,10 @@
             measurementId: "G-9EL1JQM2E4"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Security Check: Verify if User is Logged In
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = ref(database, 'users/' + user.uid);
@@ -301,23 +308,19 @@
             }
         });
 
-        // Safe Image URL Parser Function
         function setSafeImage(elementId, inputUrl) {
             if(!inputUrl) return;
             try {
                 let cleanUrl = inputUrl.trim();
-                // বড় হাতের Https:// থাকলে ছোট হাতের করে দেবে
                 if (cleanUrl.toLowerCase().startsWith("http")) {
                     cleanUrl = "https://" + cleanUrl.substring(cleanUrl.indexOf("//") + 2);
                 }
-                // ব্র্যাকেট বা স্পেশাল ক্যারেক্টার ক্লিন করার লজিক
                 document.getElementById(elementId).src = encodeURI(cleanUrl);
             } catch (e) {
                 console.error("Image loading failed for " + elementId, e);
             }
         }
 
-        // Dynamic Categories & Notice board data fetch from Admin settings
         const settingsRef = ref(database, 'admin_settings/');
         onValue(settingsRef, (snapshot) => {
             const settings = snapshot.val();
@@ -327,7 +330,6 @@
                 }
                 if(settings.categories) {
                     const cats = settings.categories;
-                    
                     if(cats.freefire && cats.freefire.image) {
                         setSafeImage('img-freefire', cats.freefire.image);
                         document.getElementById('title-freefire').innerText = cats.freefire.title || "Free Fire";
@@ -348,7 +350,6 @@
             }
         });
 
-        // Logout Event
         document.getElementById('logout-btn').addEventListener('click', (e) => {
             e.preventDefault();
             signOut(auth).then(() => {
@@ -362,6 +363,13 @@
             localStorage.setItem('selectedGame', gameName);
             window.location.href = 'game-matches.html';
         }
+
+        // Popup logic: ৪ সেকেন্ড পর পপআপ ওপেন হবে
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('home-popup').style.display = 'flex';
+            }, 4000);
+        });
     </script>
 </body>
 </html>
