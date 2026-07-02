@@ -74,6 +74,15 @@
             background: #ffcc00;
             color: #0f0c20;
         }
+        /* Rules Button Style */
+        .nav-buttons a.rules-nav {
+            border-color: #00ffcc;
+            color: #00ffcc;
+        }
+        .nav-buttons a.rules-nav:hover {
+            background: #00ffcc;
+            color: #0f0c20;
+        }
         .nav-buttons a.logout-nav:hover {
             background: #ff0055;
             border-color: #ff0055;
@@ -125,7 +134,6 @@
             background: #00ccaa;
             box-shadow: 0 0 15px rgba(0, 255, 204, 0.5);
         }
-        /* Withdraw button added */
         .withdraw-btn {
             background: #ff0055;
             color: #fff;
@@ -180,7 +188,7 @@
             width: 100%;
             height: 180px;
             object-fit: cover;
-            background: #1a1535; /* Fallback background */
+            background: #1a1535;
         }
         .game-card h3 {
             padding: 15px 0;
@@ -230,6 +238,7 @@
     <header>
         <div class="logo">IGL Tournament Zone</div>
         <div class="nav-buttons">
+            <a href="rules.html" class="rules-nav">Rules 📜</a>
             <a href="results.html" class="results-nav">Match Results 🏆</a>
             <a href="#" id="logout-btn" class="logout-nav">Log Out</a>
         </div>
@@ -242,7 +251,6 @@
         </div>
         <div class="wallet-box">
             <div class="balance">Balance: <span id="user-balance">0</span> BDT</div>
-            <!-- Withdraw button added here -->
             <a href="withdraw.html" class="withdraw-btn">Withdraw</a>
             <a href="deposit.html" class="deposit-btn">Deposit Money</a>
         </div>
@@ -285,7 +293,6 @@
         import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-        // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyC1T_3uG7GoQxUcACWzbiw63-i6S4rtGYA",
             authDomain: "igl-tournament-f788f.firebaseapp.com",
@@ -297,12 +304,10 @@
             measurementId: "G-9EL1JQM2E4"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
 
-        // Security Check: Verify if User is Logged In
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 const userRef = ref(database, 'users/' + user.uid);
@@ -319,23 +324,19 @@
             }
         });
 
-        // Safe Image URL Parser Function
         function setSafeImage(elementId, inputUrl) {
             if(!inputUrl) return;
             try {
                 let cleanUrl = inputUrl.trim();
-                // বড় হাতের Https:// থাকলে ছোট হাতের করে দেবে
                 if (cleanUrl.toLowerCase().startsWith("http")) {
                     cleanUrl = "https://" + cleanUrl.substring(cleanUrl.indexOf("//") + 2);
                 }
-                // ব্র্যাকেট বা স্পেশাল ক্যারেক্টার ক্লিন করার লজিক
                 document.getElementById(elementId).src = encodeURI(cleanUrl);
             } catch (e) {
                 console.error("Image loading failed for " + elementId, e);
             }
         }
 
-        // Dynamic Categories & Notice board data fetch from Admin settings
         const settingsRef = ref(database, 'admin_settings/');
         onValue(settingsRef, (snapshot) => {
             const settings = snapshot.val();
@@ -345,7 +346,6 @@
                 }
                 if(settings.categories) {
                     const cats = settings.categories;
-                    
                     if(cats.freefire && cats.freefire.image) {
                         setSafeImage('img-freefire', cats.freefire.image);
                         document.getElementById('title-freefire').innerText = cats.freefire.title || "Free Fire";
@@ -366,7 +366,6 @@
             }
         });
 
-        // Logout Event
         document.getElementById('logout-btn').addEventListener('click', (e) => {
             e.preventDefault();
             signOut(auth).then(() => {
