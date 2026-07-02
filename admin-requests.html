@@ -31,7 +31,7 @@
         .badge.rejected { background: rgba(255, 0, 85, 0.15); color: #ff0055; border: 1px solid #ff0055; }
         
         .approve-btn { background: #00ffcc; color: #0b0914; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
-        .reject-btn { background: #ff0055; color: #fff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; }
+        .reject-btn { background: #ff0055; color: #fff; border: none; padding: 6px 12px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-left: 5px; }
     </style>
 </head>
 <body>
@@ -106,7 +106,10 @@
                 let req = data[id];
                 body.innerHTML += `<tr><td>${req.email}</td><td>${req.method}</td><td>${req.amount}</td><td>${req.accountNumber}</td>
                 <td><span class="badge ${req.status.toLowerCase()}">${req.status}</span></td>
-                <td>${req.status === 'Pending' ? `<button class="approve-btn" onclick="approveWithdraw('${id}')">Complete</button>` : ''}</td></tr>`;
+                <td>${req.status === 'Pending' ? 
+                    `<button class="approve-btn" onclick="approveWithdraw('${id}')">Complete</button>
+                     <button class="reject-btn" onclick="rejectWithdraw('${id}','${req.userId}',${req.amount})">Reject</button>` 
+                    : ''}</td></tr>`;
             }
         });
 
@@ -118,6 +121,14 @@
         window.approveWithdraw = (id) => {
             update(ref(database, `withdraw_requests/${id}`), { status: 'Approved' });
             alert("Withdrawal marked as completed!");
+        };
+
+        window.rejectWithdraw = (id, userId, amount) => {
+            if(confirm("Are you sure you want to reject this? The balance will be refunded.")) {
+                runTransaction(ref(database, `users/${userId}/balance`), (b) => (b || 0) + amount);
+                update(ref(database, `withdraw_requests/${id}`), { status: 'Rejected' });
+                alert("Withdrawal rejected and balance refunded!");
+            }
         };
 
         document.getElementById('admin-logout').addEventListener('click', () => {
