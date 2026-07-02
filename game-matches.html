@@ -21,7 +21,7 @@
         .info h3 { color: #fff; margin-bottom: 5px; font-size: 18px; }
         .info p { color: #aaa; font-size: 14px; margin-bottom: 3px; }
         .match-action { text-align: right; pointer-events: auto; }
-        .join-btn { background: #ff0055; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
+        .join-btn { background: #ff0055; color: #fff; border: none; padding: 12px 25px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; width: 100%; }
         .join-btn:hover { background: #d00045; }
         .join-btn:disabled { background: #332a45; color: #888; cursor: not-allowed; }
         .collapsible-content { display: none; margin-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 15px; }
@@ -36,8 +36,8 @@
 <body>
     <header>
         <a href="home.html" class="back-btn">← Back to Home</a>
-        <div class="game-title" id="current-game-title">All Match...</div>
-        <div style="color: #00ffcc; font-weight: bold;">Balance: <span id="header-balance">Loding</span> BDT</div>
+        <div class="game-title" id="current-game-title">Matches</div>
+        <div style="color: #00ffcc; font-weight: bold;">Balance: <span id="header-balance">Loading...</span> BDT</div>
     </header>
     <div class="container">
         <div class="matches-list" id="matches-display"></div>
@@ -47,11 +47,12 @@
             <span class="close-modal" id="closeModalBtn" style="cursor:pointer; float:right;">&times;</span>
             <h3 id="modal-match-title">Join Tournament</h3>
             <form id="join-match-form">
-                <input type="text" id="player-uid" placeholder="Enter In-Game Name / গেমে থাকা নাম লিখুন" style="width:100%; padding:12px; background:#000; border:1px solid #444; color:#fff; margin-bottom:15px;" required>
+                <input type="text" id="player-uid" placeholder="Enter In-Game Name" style="width:100%; padding:12px; background:#000; border:1px solid #444; color:#fff; margin-bottom:15px;" required>
                 <button type="submit" class="confirm-btn">Confirm & Join</button>
             </form>
         </div>
     </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -62,7 +63,13 @@
         const selectedGame = localStorage.getItem('selectedGame') || 'freefire';
         let currentUserId = null, selectedMatchId = null;
 
-        onAuthStateChanged(auth, (u) => { if(u) { currentUserId = u.uid; loadMatches(); } });
+        onAuthStateChanged(auth, (u) => { 
+            if(u) { 
+                currentUserId = u.uid; 
+                onValue(ref(database, 'users/' + u.uid), (s) => document.getElementById('header-balance').innerText = s.val()?.balance || 0);
+                loadMatches(); 
+            } 
+        });
         
         function loadMatches() {
             onValue(ref(database, 'matches/' + selectedGame), (snap) => {
@@ -73,16 +80,37 @@
                     const match = matches[key];
                     const card = document.createElement('div');
                     card.className = 'match-card';
-                    card.innerHTML = `<div class="match-main-info"><div class="match-details"><img class="match-logo" src="${match.logo || 'https://placehold.co/80x80'}"><div><h3>${match.title}</h3><p>Time: ${match.time}</p></div></div><div class="match-action">Fee: ${match.entryFee} BDT</div></div><div class="collapsible-content"><div class="joined-players-box"><p>👥 Joined Players:</p><div class="player-list" id="list-${key}"></div></div><button class="join-btn" id="btn-${key}" onclick="openJoinModal('${key}', '${match.title}')">JOIN MATCH</button></div>`;
+                    card.innerHTML = `
+                        <div class="match-main-info">
+                            <div class="match-details">
+                                <img class="match-logo" src="${match.logo || 'https://placehold.co/80x80'}">
+                                <div>
+                                    <h3>${match.title}</h3>
+                                    <p>Time: ${match.time}</p>
+                                    <p id="slot-info-${key}" style="color:#00ffcc; font-size:12px;">Loading slots...</p>
+                                </div>
+                            </div>
+                            <div class="match-action">Fee: ${match.entryFee} BDT</div>
+                        </div>
+                        <div class="collapsible-content">
+                            <div class="joined-players-box"><p>👥 Joined Players:</p><div class="player-list" id="list-${key}"></div></div>
+                            <button class="join-btn" id="btn-${key}" onclick="openJoinModal('${key}', '${match.title}')">JOIN MATCH</button>
+                        </div>`;
                     card.onclick = (e) => { if(!e.target.classList.contains('join-btn')) { const c = card.querySelector('.collapsible-content'); c.style.display = c.style.display === 'block' ? 'none' : 'block'; }};
                     displayZone.appendChild(card);
                     
                     onValue(ref(database, `match_registrations/${selectedGame}/${key}`), (rSnap) => {
                         const regs = rSnap.val() || {};
+                        const count = Object.keys(regs).length;
+                        const total = match.totalSlots || 0;
                         const btn = card.querySelector(`#btn-${key}`);
-                        const isJoined = Object.values(regs).some(r => r.userId === currentUserId);
+                        
+                        document.getElementById(`slot-info-${key}`).innerText = `Joined: ${count} / ${total} Slots`;
                         card.querySelector(`#list-${key}`).innerHTML = Object.values(regs).map(r => `<span class="player-tag">${r.gameUid}</span>`).join('');
+                        
+                        const isJoined = Object.values(regs).some(r => r.userId === currentUserId);
                         if(isJoined) { btn.innerText = "ALREADY JOINED"; btn.disabled = true; }
+                        else if(count >= total) { btn.innerText = "SLOT FULL"; btn.disabled = true; }
                     });
                 }
             });
